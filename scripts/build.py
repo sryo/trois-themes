@@ -19,8 +19,11 @@ SITE = os.path.join(ROOT, "site")
 
 # Kept in step with ThemeInstaller in Trois, which rejects anything else.
 ALLOWED_EXTENSIONS = {"bmp", "png", "jpg", "jpeg", "gif", "tif", "tiff", "ico", "txt", "3dc", "ccs", "reg", "json"}
-BUTTONS = ["close", "closeDown", "closeDisabled", "minimize", "minimizeDown", "minimizeDisabled",
-           "zoom", "zoomDown", "zoomDisabled", "restore", "restoreDown", "help", "helpDown"]
+# Kept in step with ButtonSlot in Trois, which saves these from its Editor tab.
+BUTTONS = ["close", "closeHover", "closeDown", "closeDisabled",
+           "minimize", "minimizeHover", "minimizeDown", "minimizeDisabled",
+           "zoom", "zoomHover", "zoomDown", "zoomDisabled",
+           "restore", "restoreDown", "help", "helpHover", "helpDown", "helpDisabled"]
 MAX_FILE_BYTES = 1_000_000
 MAX_ZIP_BYTES = 2_000_000
 ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,64}$")

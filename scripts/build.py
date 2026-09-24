@@ -149,7 +149,7 @@ def gallery(entries):
             # The frame image holds the buttons too.
             stage = (f'<div class="stage" style="--fw:{px(fw)};--fh:{px(fh)};--x:{px(wx)};--y:{px(wy)};--w:{px(ww)};--h:{px(wh)}">'
                      f'<div class="window"></div><img class="frame" src="{html.escape(framed["image"])}" alt="" '
-                     f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy">{title}</div>')
+                     f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy"><div class="corners"></div>{title}</div>')
         else:
             stage = f'<div class="stage"><div class="window plain"><div class="buttons">{buttons}</div></div></div>'
         engine = f'<p class="engine">{html.escape(e["engine"])}</p>' if e.get("engine") else ""
@@ -198,6 +198,11 @@ def gallery(entries):
   .window {{ position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); background: var(--window); border-radius: 8px; box-sizing: border-box; }}
   .window.plain {{ inset: 12px; border: 0.5px solid var(--line); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }}
   .frame {{ position: absolute; left: 0; top: 0; image-rendering: pixelated; }}
+  /* The window's corners over the frame. On screen the window hides the corner fill that reaches under its
+     edge; here the frame sits over the window, so the corners go back on top. Only the 8px corner squares
+     show, clear of the buttons. Matches WindowCorners in the app. */
+  .corners {{ position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); background: var(--window); border-radius: 8px;
+    --sq: linear-gradient(#000 0 0) no-repeat; mask: var(--sq) top left / 8px 8px, var(--sq) top right / 8px 8px, var(--sq) bottom left / 8px 8px, var(--sq) bottom right / 8px 8px; }}
   .buttons {{ position: absolute; inset: 0; padding: 8px; box-sizing: border-box; display: flex; align-items: flex-start; gap: 4px; }}
   .title {{ position: absolute; font-size: 12px; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
   /* Buttons draw at one CSS pixel per image pixel, like on screen. */

@@ -6,6 +6,8 @@ Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready
 
 The gallery is at https://trois-dev.github.io/trois-themes/. Install opens Trois, downloads the theme and applies it. Trois can also browse and install these from Settings > Get Themes.
 
+To get Trois, download the zip from [Trois releases](https://github.com/trois-dev/trois/releases), unzip it, move Trois.app to Applications and give it Accessibility permission when asked. It needs macOS 13 or later on Apple silicon.
+
 ## Credits
 
 Each theme is the work of the author named in its `theme.json`. `engine` names the tool it was made for and `source` links to where it was collected. Themes are rehosted here unmodified, with their original readmes, so they keep working with Trois. See the [Trois credits](https://github.com/trois-dev/trois#credits) for the archives they were collected from.

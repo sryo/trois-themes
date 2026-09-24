@@ -116,7 +116,7 @@ def button_row(theme_id, buttons):
 
 # The sidebar in a card's window: inset 4 on three sides, 40% of the window
 # wide within 60 to 72, and wider when the buttons need it. Returns its width,
-# or None when the window can't keep 72 beside it for the Install button.
+# or None when the window can't keep 72 beside it.
 # Kept in step with PreviewWindowLayout in the app.
 SIDEBAR_INSET = 4
 PLAIN_WINDOW = (144, 88)
@@ -127,19 +127,13 @@ def sidebar_width(window_width, row):
     return width if window_width - SIDEBAR_INSET - width >= 72 else None
 
 
-def window_parts(window_width, row):
-    """The sidebar for a card's window, and the hover button to put in the
-    window beside it, or None when it goes over the whole card instead."""
+def sidebar(window_width, row):
     sb = sidebar_width(window_width, row)
-    if not sb:
-        return "", None
-    sidebar = f'<div class="sidebar" style="width:{px(sb)}"></div>'
-    return sidebar, action_button(SIDEBAR_INSET + sb)
+    return f'<div class="sidebar" style="width:{px(sb)}"></div>' if sb else ""
 
 
-# Centered right of `left`.
-def action_button(left):
-    return f'<span class="action" style="left:{px(left)}" aria-hidden="true"><span>Install</span></span>'
+# Centered over the whole card, like the app.
+ACTION = '<span class="action" aria-hidden="true"><span>Install</span></span>'
 
 
 
@@ -177,10 +171,7 @@ def gallery(entries):
         )
         framed = e.get("frame")
         window_width = framed["window"][2] if framed else PLAIN_WINDOW[0]
-        sidebar, action = window_parts(window_width, e["buttonRow"])
-        # Windows without a sidebar are too small to hold it, so it goes over the card.
-        card_action = "" if action else action_button(0)
-        action = action or ""
+        bar = sidebar(window_width, e["buttonRow"])
         if framed:
             fw, fh = framed["size"]
             wx, wy, ww, wh = framed["window"]
@@ -192,10 +183,10 @@ def gallery(entries):
                          f'line-height:{px(th)};color:{framed["title"]["color"]}{emboss}">{html.escape(e["name"])}</span>')
             # The frame image holds the buttons too.
             stage = (f'<div class="stage" style="--fw:{px(fw)};--fh:{px(fh)};--x:{px(wx)};--y:{px(wy)};--w:{px(ww)};--h:{px(wh)}">'
-                     f'<div class="window">{sidebar}{action}</div><img class="frame" src="{html.escape(framed["image"])}" alt="" '
-                     f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy"><div class="corners">{sidebar}</div>{title}</div>')
+                     f'<div class="window">{bar}</div><img class="frame" src="{html.escape(framed["image"])}" alt="" '
+                     f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy"><div class="corners">{bar}</div>{title}</div>')
         else:
-            stage = f'<div class="stage"><div class="window plain">{sidebar}<div class="buttons">{buttons}</div>{action}</div></div>'
+            stage = f'<div class="stage"><div class="window plain">{bar}<div class="buttons">{buttons}</div></div></div>'
         engine = f'<p class="engine">{html.escape(e["engine"])}</p>' if e.get("engine") else ""
         source = e.get("source") or ""
         source_link = (
@@ -205,7 +196,7 @@ def gallery(entries):
         search = html.escape(f'{e["name"]} {e["author"]}'.lower())
         cards.append(f'<li data-search="{search}" data-engine="{html.escape(e.get("engine") or "")}">'
                      f'<a class="card" href="trois://install/{html.escape(e["id"])}" title="Install and apply in Trois">'
-                     f'<div class="desk">{stage}{card_action}</div>'
+                     f'<div class="desk">{stage}{ACTION}</div>'
                      f'<h2>{html.escape(e["name"])}</h2><p>by {html.escape(e["author"])}</p>{engine}</a>{source_link}</li>')
     return f"""<!doctype html>
 <html lang="en">
@@ -223,6 +214,13 @@ def gallery(entries):
   h1 {{ font-weight: 300; font-size: 40px; margin: 0 0 8px; }}
   .intro {{ color: var(--muted); margin: 0 0 24px; }}
   .intro a, footer a {{ color: inherit; }}
+  .setup {{ background: var(--window); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 0 0 24px; font-size: 14px; }}
+  .setup h2 {{ font-size: 15px; font-weight: 600; margin: 0 0 6px; white-space: normal; }}
+  .setup ol {{ margin: 0; padding-left: 20px; }}
+  .setup li {{ text-align: left; content-visibility: visible; }}
+  .setup li + li {{ margin-top: 3px; }}
+  .setup p {{ color: var(--muted); font-size: 13px; margin: 8px 0 0; }}
+  .setup a {{ color: var(--accent); }}
   ul {{ list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 24px 16px; }}
   li {{ text-align: center; min-width: 0; content-visibility: auto; contain-intrinsic-size: auto 200px; }}
   .controls {{ display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 0 0 20px; }}
@@ -255,8 +253,8 @@ def gallery(entries):
   /* Buttons draw at one CSS pixel per image pixel, like on screen. */
   .buttons img {{ image-rendering: pixelated; flex: none; }}
   .dot {{ width: 14px; height: 14px; border-radius: 50%; background: var(--faint); opacity: .4; flex: none; }}
-  /* The card's action on hover, centered right of the sidebar or over the whole card when there's none, like the app. The whole card is the link. */
-  .action {{ position: absolute; top: 0; right: 0; bottom: 0; display: grid; place-items: center; opacity: 0; transition: opacity .15s; pointer-events: none; }}
+  /* The card's action on hover, centered over the whole card like the app. The whole card is the link. */
+  .action {{ position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transition: opacity .15s; pointer-events: none; }}
   .action span {{ background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 999px; box-shadow: 0 1px 2px rgba(0, 0, 0, .2); }}
   /* 3px of accent: the 1px border and 2px around it. */
   .card:hover .desk, .card:focus-visible .desk {{ border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }}
@@ -275,6 +273,15 @@ def gallery(entries):
   <p class="intro">{len(entries)} window themes from classic customizers like EppieDesktop and Kaleidoscope, ready for
     <a href="https://github.com/trois-dev/trois">Trois</a>. Click a theme to install and apply it in Trois.
     Made one? <a href="https://github.com/trois-dev/trois-themes/issues/new?template=submit_theme.yml">Submit a theme</a>.</p>
+  <section class="setup" aria-labelledby="setup">
+    <h2 id="setup">Get Trois</h2>
+    <ol>
+      <li>Download the latest zip from <a href="https://github.com/trois-dev/trois/releases">Trois releases</a>, unzip it and move Trois.app to Applications.</li>
+      <li>Open Trois and give it Accessibility permission when asked.</li>
+      <li>Click a theme below. Trois downloads it and applies it.</li>
+    </ol>
+    <p>Needs macOS 13 or later on Apple silicon. For seamless injection mode, see the <a href="https://github.com/trois-dev/trois#enabling-injection-mode">README</a>.</p>
+  </section>
   <div class="controls">
     <input type="search" id="search" placeholder="Search by name or author" aria-label="Search themes" autocomplete="off">
     <div class="engines" role="group" aria-label="Engine">

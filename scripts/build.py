@@ -11,6 +11,8 @@ import zipfile
 
 from PIL import Image
 
+import frame
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 THEMES = os.path.join(ROOT, "themes")
 SITE = os.path.join(ROOT, "site")
@@ -102,10 +104,25 @@ def build_previews(theme_id, buttons):
     return previews
 
 
+# Draws the frame for the gallery card. Kept out of index.json, which the app reads.
+def build_frame_preview(theme_id, name):
+    rendered = frame.preview(os.path.join(THEMES, theme_id, "frame"), name)
+    if rendered is None:
+        return None
+    out = f"previews/{theme_id}/frame.png"
+    os.makedirs(os.path.dirname(os.path.join(SITE, out)), exist_ok=True)
+    rendered["image"].save(os.path.join(SITE, out), optimize=True)
+    return {"image": out, "size": rendered["size"], "window": rendered["window"], "title": rendered["title"]}
+
+
 # Orders by display name, skipping the leading punctuation old theme names use to sort first.
 def sort_key(entry):
     name = entry["name"].casefold()
     return (re.sub(r"^[^0-9a-z]+", "", name) or name, entry["id"])
+
+
+def px(value, unit="px"):
+    return f"{value:g}{unit}"
 
 
 def gallery(entries):
@@ -117,6 +134,22 @@ def gallery(entries):
             f'<img src="{html.escape(e["preview"][k])}" alt="" loading="lazy">' if k in e["preview"] else '<span class="dot"></span>'
             for k in ("close", "minimize", "zoom")
         )
+        framed = e.get("frame")
+        if framed:
+            fw, fh = framed["size"]
+            wx, wy, ww, wh = framed["window"]
+            window = f'left:{px(wx)};top:{px(wy)};width:{px(ww)};height:{px(wh)}'
+            title = ""
+            if framed["title"]:
+                tx, ty, tw, th = framed["title"]["box"]
+                emboss = f';text-shadow:1px 1px 0 {framed["title"]["emboss"]}' if framed["title"].get("emboss") else ""
+                title = (f'<span class="title" style="left:{px(tx)};top:{px(ty)};width:{px(tw)};height:{px(th)};'
+                         f'line-height:{px(th)};color:{framed["title"]["color"]}{emboss}">{html.escape(e["name"])}</span>')
+            stage = (f'<div class="stage framed" style="width:{px(fw)};height:{px(fh)}"><div class="window" style="{window}"></div>'
+                     f'<img class="frame" src="{html.escape(framed["image"])}" alt="" width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy">'
+                     f'<div class="buttons" style="{window}">{buttons}</div>{title}</div>')
+        else:
+            stage = f'<div class="stage"><div class="window plain"><div class="buttons">{buttons}</div></div></div>'
         engine = f'<p class="engine">{html.escape(e["engine"])}</p>' if e.get("engine") else ""
         source = e.get("source") or ""
         source_link = (
@@ -126,7 +159,7 @@ def gallery(entries):
         search = html.escape(f'{e["name"]} {e["author"]}'.lower())
         cards.append(f"""      <li data-search="{search}" data-engine="{html.escape(e.get("engine") or "")}">
         <a class="card" href="trois://install/{html.escape(e["id"])}" title="Install and apply in Trois">
-          <div class="desk"><div class="window">{buttons}</div><span class="badge" aria-hidden="true"></span></div>
+          <div class="desk">{stage}<span class="badge" aria-hidden="true"></span></div>
           <h2>{html.escape(e["name"])}</h2>
           <p>by {html.escape(e["author"])}</p>{engine}
         </a>{source_link}
@@ -160,10 +193,18 @@ def gallery(entries):
   .empty {{ color: var(--muted); text-align: center; padding: 48px 0; }}
   .card {{ display: block; color: inherit; text-decoration: none; border-radius: 10px; outline: none; }}
   /* A small window on a desktop-like backdrop, like the app's theme grid. */
-  .desk {{ position: relative; aspect-ratio: 3 / 2; background: var(--desk); border: 1px solid var(--line); border-radius: 8px; padding: 12px; box-sizing: border-box; transition: border-color .15s, box-shadow .15s; }}
-  .window {{ height: 100%; background: var(--window); border: 0.5px solid var(--line); border-radius: 8px; padding: 8px; box-sizing: border-box; display: flex; align-items: flex-start; gap: 4px; box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }}
+  .desk {{ position: relative; aspect-ratio: 3 / 2; background: var(--desk); border: 1px solid var(--line); border-radius: 8px; box-sizing: border-box; overflow: hidden;
+    display: grid; place-items: center; transition: border-color .15s, box-shadow .15s; }}
+  /* The app's 168x112 preview space, centered. Frames bigger than it are clipped. */
+  .stage {{ position: relative; width: 168px; height: 112px; flex: none; }}
+  .window {{ position: absolute; background: var(--window); border-radius: 8px; box-sizing: border-box; }}
+  .window.plain {{ inset: 12px; border: 0.5px solid var(--line); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }}
+  .frame {{ position: absolute; left: 0; top: 0; image-rendering: pixelated; }}
+  .buttons {{ position: absolute; inset: 0; padding: 8px; box-sizing: border-box; display: flex; align-items: flex-start; gap: 4px; }}
+  .framed .buttons {{ inset: auto; }}
+  .title {{ position: absolute; font-size: 12px; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
   /* Buttons draw at one CSS pixel per image pixel, like on screen. */
-  .window img {{ image-rendering: pixelated; flex: none; }}
+  .buttons img {{ image-rendering: pixelated; flex: none; }}
   .dot {{ width: 14px; height: 14px; border-radius: 50%; background: var(--faint); opacity: .4; flex: none; }}
   .badge {{ position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); opacity: 0; transition: opacity .15s;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 5v9M6 10l4 4 4-4'/%3E%3C/svg%3E"); }}
@@ -252,6 +293,7 @@ def main():
     shutil.rmtree(SITE, ignore_errors=True)
     os.makedirs(os.path.join(SITE, "themes"))
     entries = []
+    card_frames = {}
     for theme_id, meta, files in checked:
         data = build_zip(theme_id, files)
         download = f"themes/{theme_id}-{meta['version']}.zip"
@@ -269,13 +311,14 @@ def main():
             "engine": meta.get("engine"),
             "source": meta.get("source"),
         })
+        card_frames[theme_id] = build_frame_preview(theme_id, meta["name"])
 
     entries.sort(key=sort_key)
     with open(os.path.join(SITE, "index.json"), "w") as f:
         json.dump({"format": 1, "themes": entries}, f, indent=1)
         f.write("\n")
     with open(os.path.join(SITE, "index.html"), "w") as f:
-        f.write(gallery(entries))
+        f.write(gallery([{**e, "frame": card_frames[e["id"]]} for e in entries]))
     print(f"built {len(entries)} themes into {os.path.relpath(SITE, ROOT)}")
 
 

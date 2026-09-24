@@ -160,6 +160,30 @@ def px(value, unit="px"):
     return f"{value:g}{unit}"
 
 
+WEIGHTS = {"regular": 400, "medium": 500, "semibold": 600, "bold": 700, "heavy": 800}
+
+
+# The frame's title style as inline CSS; the .title rule holds the defaults.
+def title_css(t):
+    css = [f'color:{t["color"]}']
+    if t.get("shadow"):
+        s = t["shadow"]
+        css.append(f'text-shadow:{px(s["x"])} {px(s["y"])} {px(s["blur"])} {s["color"]}')
+    elif t.get("emboss"):
+        css.append(f'text-shadow:1px 1px 0 {t["emboss"]}')
+    if t.get("font"):
+        # Quotes stripped so a family name can't close the attribute.
+        family = re.sub(r'["\'<>&;]', "", t["font"])
+        css.append(f"font-family:'{family}',-apple-system,BlinkMacSystemFont,sans-serif")
+    if t.get("size"):
+        css.append(f'font-size:{px(t["size"])}')
+    if t.get("weight"):
+        css.append(f'font-weight:{WEIGHTS[t["weight"]]}')
+    if t.get("align"):
+        css.append(f'text-align:{t["align"]}')
+    return ";".join(css)
+
+
 def gallery(entries):
     engines = sorted({e["engine"] for e in entries if e.get("engine")})
     cards = []
@@ -178,9 +202,8 @@ def gallery(entries):
             title = ""
             if framed["title"]:
                 tx, ty, tw, th = framed["title"]["box"]
-                emboss = f';text-shadow:1px 1px 0 {framed["title"]["emboss"]}' if framed["title"].get("emboss") else ""
                 title = (f'<span class="title" style="left:{px(tx)};top:{px(ty)};width:{px(tw)};height:{px(th)};'
-                         f'line-height:{px(th)};color:{framed["title"]["color"]}{emboss}">{html.escape(e["name"])}</span>')
+                         f'line-height:{px(th)};{title_css(framed["title"])}">{html.escape(e["name"])}</span>')
             # The frame image holds the buttons too.
             stage = (f'<div class="stage" style="--fw:{px(fw)};--fh:{px(fh)};--x:{px(wx)};--y:{px(wy)};--w:{px(ww)};--h:{px(wh)}">'
                      f'<div class="window">{bar}</div><img class="frame" src="{html.escape(framed["image"])}" alt="" '

@@ -36,16 +36,75 @@ K1_STRIPE_TOP = 4
 K1_WIDGET_GAP = 3
 K1_TITLE_GAP = 6
 
-_font = None
+_fonts = {}
+TITLE_SIZE = 12
+TITLE_SIZES = (8, 24)
+TITLE_WEIGHTS = ("regular", "medium", "semibold", "bold", "heavy")
+TITLE_ALIGNS = ("left", "center", "right")
 
 
-# Stands in for the app's 12 point semibold system font when sizing the title.
-def title_width(text):
-    global _font
-    if _font is None:
-        _font = ImageFont.load_default(12)
+# Stands in for the app's title font, 12 point semibold unless the frame's
+# title style says otherwise, when sizing the title.
+def title_width(text, style=None):
+    size = title_size(style)
+    if size not in _fonts:
+        _fonts[size] = ImageFont.load_default(size)
     # Scaled up with room to spare, since browsers set it in their own font.
-    return math.ceil(_font.getlength(text) * 1.12) + 2
+    return math.ceil(_fonts[size].getlength(text) * 1.12) + 2 + title_spill(style)
+
+
+def title_size(style):
+    size = (style or {}).get("size")
+    if not isinstance(size, (int, float)) or isinstance(size, bool):
+        return TITLE_SIZE
+    return round(min(max(size, TITLE_SIZES[0]), TITLE_SIZES[1]))
+
+
+def is_color(value):
+    return isinstance(value, str) and len(value) in (7, 9) and value[0] == "#" and all(c in "0123456789abcdefABCDEF" for c in value[1:])
+
+
+def custom_shadow(style):
+    shadow = (style or {}).get("shadow")
+    if not isinstance(shadow, dict) or not is_color(shadow.get("color")):
+        return None
+    def number(key, fallback):
+        v = shadow.get(key, fallback)
+        return v if isinstance(v, (int, float)) and not isinstance(v, bool) else fallback
+    return {"color": shadow["color"], "x": number("x", 1), "y": number("y", 1), "blur": max(0, number("blur", 0))}
+
+
+# Room for a custom shadow, like ResolvedTitle.spill.
+def title_spill(style):
+    shadow = custom_shadow(style)
+    return abs(shadow["x"]) + shadow["blur"] if shadow else 0
+
+
+def title_align(style):
+    align = (style or {}).get("align")
+    return align if align in TITLE_ALIGNS else "center"
+
+
+def styled_title(box, style, color, emboss=None):
+    """The title box for the page: `color` and `emboss` are what the art
+    picks, and layout.json's title style overrides them, like TitleStyle.swift."""
+    style = style or {}
+    title = {"box": box, "color": style["color"] if is_color(style.get("color")) else color}
+    shadow = custom_shadow(style)
+    if shadow:
+        title["shadow"] = shadow
+    elif emboss and style.get("shadow") is not False:
+        title["emboss"] = emboss
+    font = style.get("font")
+    if isinstance(font, str) and font and font != "system":
+        title["font"] = font
+    if title_size(style) != TITLE_SIZE:
+        title["size"] = title_size(style)
+    if style.get("weight") in TITLE_WEIGHTS and style["weight"] != "semibold":
+        title["weight"] = style["weight"]
+    if title_align(style) != "center":
+        title["align"] = title_align(style)
+    return title
 
 
 class Segment:
@@ -136,8 +195,9 @@ class Frame:
     """A Kaleidoscope 2 document window: the art plus the wnd# layout that
     says how to stretch it."""
 
-    def __init__(self, active, layout):
+    def __init__(self, active, layout, title=None):
         self.active = active
+        self.title_style = title
         self.size = active.size
         self.rects = {}
         for entry in layout.get("rects") or []:
@@ -324,7 +384,7 @@ class Frame:
         top, left, bottom, right = self.insets
         outer = (window[0] + left + right, window[1] + top + bottom)
         c = self.content
-        title_w = title_width(title) + 8
+        title_w = title_width(title, self.title_style) + 8
         # The grid draws every button at the traffic lights.
         hidden = set(WIDGET_PARTS)
         sides = self.sides(outer, set(), self.cut_out(hidden), title_w)
@@ -354,8 +414,8 @@ class Frame:
         if rect and s:
             before, after = s.start - rect[0], rect[2] - s.end
             x = s.out_start - before
-            title_box = {"box": (x, rect[1], s.out_length + before + after, rect[3] - rect[1]),
-                         "color": "#fff" if self.title_is_dark(rect) else "#000"}
+            title_box = styled_title((x, rect[1], s.out_length + before + after, rect[3] - rect[1]),
+                                     self.title_style, "#fff" if self.title_is_dark(rect) else "#000")
         return canvas.image, outer, title_box
 
     # Light text on dark title bars, dark on light ones.
@@ -377,8 +437,9 @@ class K1Frame:
     """A Kaleidoscope 1.x scheme, drawn by fixed rules from its 16x16
     miniature window icon. See WindowFrameK1.swift for the rules."""
 
-    def __init__(self, icon, stripes, pattern):
+    def __init__(self, icon, stripes, pattern, title=None):
         self.icon, self.stripes, self.pattern = icon, stripes, pattern
+        self.title_style = title
         self.insets = K1_INSETS
 
     def render(self, window, title):
@@ -410,8 +471,9 @@ class K1Frame:
         # No widgets in the frame, so the stripes run the whole title bar.
         stripe_start = 4 + K1_WIDGET_GAP
         stripe_end = W - 4 - K1_WIDGET_GAP
-        w = min(title_width(title), max(0, stripe_end - stripe_start - 2 * K1_TITLE_GAP))
-        box = ((W - w) / 2, 3, w, t - 6)
+        w = min(title_width(title, self.title_style), max(0, stripe_end - stripe_start - 2 * K1_TITLE_GAP))
+        x = {"left": stripe_start + K1_TITLE_GAP, "right": stripe_end - K1_TITLE_GAP - w}.get(title_align(self.title_style), (W - w) / 2)
+        box = (x, 3, w, t - 6)
         if self.stripes and stripe_end > stripe_start:
             y0, y1 = K1_STRIPE_TOP, K1_STRIPE_TOP + self.stripes.height
             # Stripes stop short of the title on both sides, each piece with its own ends.
@@ -419,10 +481,9 @@ class K1Frame:
                 if x1 > x0:
                     self.draw_stripes(canvas, (x0, y0, x1, y1))
 
-        title_box = {"box": box, "color": hex_color(pixel(icon, 7, 3) or (0, 0, 0))}
         emboss, background = pixel(icon, 9, 3), pixel(icon, 6, 3)
-        if emboss and emboss != background:
-            title_box["emboss"] = hex_color(emboss)
+        title_box = styled_title(box, self.title_style, hex_color(pixel(icon, 7, 3) or (0, 0, 0)),
+                                 hex_color(emboss) if emboss and emboss != background else None)
         return canvas.image, (W, H), title_box
 
     # Left half of the stripes icon at the start, right half at the end, the
@@ -459,15 +520,16 @@ def load(frame_dir):
     active = load_image(os.path.join(frame_dir, "active.png"))
     if active is None:
         return None
+    title = meta.get("title") if isinstance(meta.get("title"), dict) else None
     if meta.get("format") == "k1":
         if active.size != (16, 16):
             return None
         return K1Frame(active, load_image(os.path.join(frame_dir, "stripes.png")),
-                       load_image(os.path.join(frame_dir, "stripes_pattern.png")))
+                       load_image(os.path.join(frame_dir, "stripes_pattern.png")), title)
     if not isinstance(meta.get("layout"), dict):
         return None
     try:
-        return Frame(active, meta["layout"])
+        return Frame(active, meta["layout"], title)
     except (ValueError, TypeError, IndexError):
         return None
 

@@ -179,6 +179,13 @@ def pixel(image, x, y):
     return (r, g, b) if a > 0 else None
 
 
+def stored_color(image, x, y):
+    """A pixel's color as stored, even where it's transparent, or None if outside."""
+    if not (0 <= x < image.width and 0 <= y < image.height):
+        return None
+    return image.getpixel((x, y))[:3]
+
+
 def hex_color(rgb):
     return "#%02x%02x%02x" % rgb
 
@@ -414,23 +421,14 @@ class Frame:
         if rect and s:
             before, after = s.start - rect[0], rect[2] - s.end
             x = s.out_start - before
+            # Kaleidoscope's colors, like WindowFrame.resolvedTitle: text at the
+            # content rect's top left, emboss right of it unless it matches.
+            text = stored_color(self.active, c[0], c[1]) or (0, 0, 0)
+            emboss = stored_color(self.active, c[0] + 1, c[1])
             title_box = styled_title((x, rect[1], s.out_length + before + after, rect[3] - rect[1]),
-                                     self.title_style, "#fff" if self.title_is_dark(rect) else "#000")
+                                     self.title_style, hex_color(text),
+                                     hex_color(emboss) if emboss and emboss != text else None)
         return canvas.image, outer, title_box
-
-    # Light text on dark title bars, dark on light ones.
-    def title_is_dark(self, rect):
-        crop = self.active.crop(rect)
-        if crop.width <= 0 or crop.height <= 0:
-            return False
-        # Averaged over premultiplied pixels, like drawing the crop into one pixel.
-        r = g = b = 0
-        for pr, pg, pb, pa in crop.getdata():
-            r += pr * pa
-            g += pg * pa
-            b += pb * pa
-        n = crop.width * crop.height * 255
-        return 0.299 * r / n + 0.587 * g / n + 0.114 * b / n < 128
 
 
 class K1Frame:
@@ -481,9 +479,10 @@ class K1Frame:
                 if x1 > x0:
                     self.draw_stripes(canvas, (x0, y0, x1, y1))
 
-        emboss, background = pixel(icon, 9, 3), pixel(icon, 6, 3)
-        title_box = styled_title(box, self.title_style, hex_color(pixel(icon, 7, 3) or (0, 0, 0)),
-                                 hex_color(emboss) if emboss and emboss != background else None)
+        # Kaleidoscope skips the emboss when it matches the text, not the background.
+        text, emboss = pixel(icon, 7, 3), pixel(icon, 9, 3)
+        title_box = styled_title(box, self.title_style, hex_color(text or (0, 0, 0)),
+                                 hex_color(emboss) if emboss and emboss != text else None)
         return canvas.image, (W, H), title_box
 
     # Left half of the stripes icon at the start, right half at the end, the

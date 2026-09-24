@@ -1,6 +1,6 @@
 # Trois Themes
 
-Button themes for Trois, an homage to EppieDesktop by Jeff Epstein.
+Button themes for [Trois](https://github.com/sryo/trois), an homage to EppieDesktop by Jeff Epstein.
 
 The gallery is at https://sryo.github.io/trois-themes/. Install opens Trois, downloads the theme and applies it. Trois can also browse and install these from Settings > Get Themes.
 

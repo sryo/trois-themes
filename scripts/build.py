@@ -102,17 +102,34 @@ def build_previews(theme_id, buttons):
     return previews
 
 
+# Orders by display name, skipping the leading punctuation old theme names use to sort first.
+def sort_key(entry):
+    name = entry["name"].casefold()
+    return (re.sub(r"^[^0-9a-z]+", "", name) or name, entry["id"])
+
+
 def gallery(entries):
+    engines = sorted({e["engine"] for e in entries if e.get("engine")})
     cards = []
     for e in entries:
-        images = "".join(
-            f'<img src="{html.escape(e["preview"][k])}" alt="">' for k in ("close", "minimize", "zoom") if k in e["preview"]
+        # A faint dot holds the spot of a button the theme doesn't have, like the app.
+        buttons = "".join(
+            f'<img src="{html.escape(e["preview"][k])}" alt="" loading="lazy">' if k in e["preview"] else '<span class="dot"></span>'
+            for k in ("close", "minimize", "zoom")
         )
-        cards.append(f"""      <li>
-        <div class="preview">{images}</div>
-        <h2>{html.escape(e["name"])}</h2>
-        <p>by {html.escape(e["author"])}</p>
-{f'        <p class="engine">{html.escape(e["engine"])}</p>{chr(10)}' if e.get("engine") else ""}        <a class="install" href="trois://install/{html.escape(e["id"])}">Install</a>
+        engine = f'<p class="engine">{html.escape(e["engine"])}</p>' if e.get("engine") else ""
+        source = e.get("source") or ""
+        source_link = (
+            f'\n        <a class="source" href="{html.escape(source)}">Source</a>'
+            if source.startswith(("https://", "http://")) else ""
+        )
+        search = html.escape(f'{e["name"]} {e["author"]}'.lower())
+        cards.append(f"""      <li data-search="{search}" data-engine="{html.escape(e.get("engine") or "")}">
+        <a class="card" href="trois://install/{html.escape(e["id"])}" title="Install and apply in Trois">
+          <div class="desk"><div class="window">{buttons}</div><span class="badge" aria-hidden="true"></span></div>
+          <h2>{html.escape(e["name"])}</h2>
+          <p>by {html.escape(e["author"])}</p>{engine}
+        </a>{source_link}
       </li>""")
     return f"""<!doctype html>
 <html lang="en">
@@ -121,35 +138,62 @@ def gallery(entries):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trois Themes</title>
 <style>
-  :root {{ --bg: #f5f5f7; --card: #fff; --text: #1d1d1f; --muted: #6e6e73; --accent: #0071e3; --line: #d2d2d7; }}
+  :root {{ --bg: #f5f5f7; --desk: #e4e4e8; --window: #fff; --text: #1d1d1f; --muted: #6e6e73; --faint: #a1a1a6; --accent: #0071e3; --line: #d2d2d7; }}
   @media (prefers-color-scheme: dark) {{
-    :root {{ --bg: #1d1d1f; --card: #2c2c2e; --text: #f5f5f7; --muted: #a1a1a6; --accent: #2997ff; --line: #3a3a3c; }}
+    :root {{ --bg: #1d1d1f; --desk: #2c2c2e; --window: #3a3a3c; --text: #f5f5f7; --muted: #a1a1a6; --faint: #6e6e73; --accent: #2997ff; --line: #48484a; }}
   }}
   body {{ margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; }}
   main {{ max-width: 960px; margin: 0 auto; padding: 32px 16px; }}
   h1 {{ font-weight: 300; font-size: 40px; margin: 0 0 8px; }}
   .intro {{ color: var(--muted); margin: 0 0 24px; }}
-  ul {{ list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }}
-  li {{ background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; text-align: center; }}
-  .preview {{ height: 48px; display: flex; align-items: center; justify-content: center; gap: 4px; }}
-  .preview img {{ image-rendering: pixelated; }}
-  h2 {{ font-size: 15px; font-weight: 600; margin: 8px 0 0; }}
-  li p {{ color: var(--muted); font-size: 13px; margin: 2px 0 0; }}
-  li p.engine {{ font-size: 12px; }}
-  .install {{ display: inline-block; background: var(--accent); color: #fff; border-radius: 999px; padding: 4px 16px; margin-top: 12px; text-decoration: none; font-weight: 500; }}
-  footer {{ color: var(--muted); font-size: 13px; margin-top: 32px; }}
-  footer a {{ color: inherit; }}
+  .intro a, footer a {{ color: inherit; }}
+  ul {{ list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 24px 16px; }}
+  li {{ text-align: center; min-width: 0; content-visibility: auto; contain-intrinsic-size: auto 200px; }}
+  li[hidden] {{ display: none; }}
+  .controls {{ display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 0 0 20px; }}
+  .controls input {{ flex: 1 1 220px; font: inherit; color: inherit; background: var(--window); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }}
+  .controls input:focus {{ outline: 2px solid var(--accent); outline-offset: -1px; }}
+  .engines {{ display: flex; flex-wrap: wrap; gap: 6px; }}
+  .engines button {{ font: inherit; font-size: 13px; color: var(--text); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }}
+  .engines button[aria-pressed="true"] {{ background: var(--accent); border-color: var(--accent); color: #fff; }}
+  .count {{ color: var(--muted); font-size: 13px; }}
+  .empty {{ color: var(--muted); text-align: center; padding: 48px 0; }}
+  .card {{ display: block; color: inherit; text-decoration: none; border-radius: 10px; outline: none; }}
+  /* A small window on a desktop-like backdrop, like the app's theme grid. */
+  .desk {{ position: relative; aspect-ratio: 3 / 2; background: var(--desk); border: 1px solid var(--line); border-radius: 8px; padding: 12px; box-sizing: border-box; transition: border-color .15s, box-shadow .15s; }}
+  .window {{ height: 100%; background: var(--window); border: 0.5px solid var(--line); border-radius: 8px; padding: 8px; box-sizing: border-box; display: flex; align-items: flex-start; gap: 4px; box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }}
+  /* Buttons draw at one CSS pixel per image pixel, like on screen. */
+  .window img {{ image-rendering: pixelated; flex: none; }}
+  .dot {{ width: 14px; height: 14px; border-radius: 50%; background: var(--faint); opacity: .4; flex: none; }}
+  .badge {{ position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); opacity: 0; transition: opacity .15s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 5v9M6 10l4 4 4-4'/%3E%3C/svg%3E"); }}
+  .card:hover .desk, .card:focus-visible .desk {{ border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }}
+  .card:hover .badge, .card:focus-visible .badge {{ opacity: 1; }}
+  h2 {{ font-size: 13px; font-weight: 500; margin: 8px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+  li p {{ color: var(--muted); font-size: 12px; margin: 1px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+  li p.engine {{ color: var(--faint); font-size: 11px; }}
+  .source {{ display: inline-block; color: var(--accent); font-size: 12px; margin-top: 2px; text-decoration: none; }}
+  .source:hover {{ text-decoration: underline; }}
+  footer {{ color: var(--muted); font-size: 13px; margin-top: 40px; }}
 </style>
 </head>
 <body>
 <main>
   <h1>Trois Themes</h1>
-  <p class="intro">Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready to install in
-    <a href="https://github.com/trois-dev/trois">Trois</a>. Install opens Trois and applies the theme.
+  <p class="intro">{len(entries)} window themes from classic customizers like EppieDesktop and Kaleidoscope, ready for
+    <a href="https://github.com/trois-dev/trois">Trois</a>. Click a theme to install and apply it in Trois.
     Made one? <a href="https://github.com/trois-dev/trois-themes/issues/new?template=submit_theme.yml">Submit a theme</a>.</p>
-  <ul>
+  <div class="controls">
+    <input type="search" id="search" placeholder="Search by name or author" aria-label="Search themes" autocomplete="off">
+    <div class="engines" role="group" aria-label="Engine">
+{chr(10).join(f'      <button type="button" data-engine="{html.escape(x)}" aria-pressed="{str(x == "").lower()}">{html.escape(x or "All")}</button>' for x in ["", *engines])}
+    </div>
+    <span class="count" id="count" aria-live="polite"></span>
+  </div>
+  <ul id="themes">
 {chr(10).join(cards)}
   </ul>
+  <p class="empty" id="empty" hidden>No themes match.</p>
   <footer>
     Each theme is the work of its author. See the
     <a href="https://github.com/trois-dev/trois#credits">credits</a> for the tools and archives they come from.
@@ -157,6 +201,33 @@ def gallery(entries):
     <a href="https://github.com/trois-dev/trois-themes/issues">open an issue</a>.
   </footer>
 </main>
+<script>
+  // Filters the cards by search text and engine. Without JavaScript every card shows.
+  const cards = [...document.querySelectorAll("#themes li")];
+  const search = document.getElementById("search");
+  const buttons = [...document.querySelectorAll(".engines button")];
+  let engine = "";
+  function update() {{
+    const words = search.value.toLowerCase().split(/\\s+/).filter(Boolean);
+    let shown = 0;
+    for (const card of cards) {{
+      const match = (!engine || card.dataset.engine === engine) && words.every(w => card.dataset.search.includes(w));
+      card.hidden = !match;
+      if (match) shown++;
+    }}
+    document.getElementById("count").textContent = shown === cards.length ? `${{shown}} themes` : `${{shown}} of ${{cards.length}}`;
+    document.getElementById("empty").hidden = shown > 0;
+  }}
+  search.addEventListener("input", update);
+  for (const button of buttons) {{
+    button.addEventListener("click", () => {{
+      engine = button.dataset.engine;
+      buttons.forEach(b => b.setAttribute("aria-pressed", String(b === button)));
+      update();
+    }});
+  }}
+  update();
+</script>
 </body>
 </html>
 """
@@ -199,6 +270,7 @@ def main():
             "source": meta.get("source"),
         })
 
+    entries.sort(key=sort_key)
     with open(os.path.join(SITE, "index.json"), "w") as f:
         json.dump({"format": 1, "themes": entries}, f, indent=1)
         f.write("\n")

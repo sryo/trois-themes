@@ -148,10 +148,10 @@ def gallery(entries):
                          f'line-height:{px(th)};color:{framed["title"]["color"]}{emboss}">{html.escape(e["name"])}</span>')
             # The frame image holds the buttons too.
             stage = (f'<div class="stage" style="--fw:{px(fw)};--fh:{px(fh)};--x:{px(wx)};--y:{px(wy)};--w:{px(ww)};--h:{px(wh)}">'
-                     f'<div class="window"></div><img class="frame" src="{html.escape(framed["image"])}" alt="" '
-                     f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy"><div class="corners"></div>{title}</div>')
+                     f'<div class="window"><div class="sidebar"></div></div><img class="frame" src="{html.escape(framed["image"])}" alt="" '
+                     f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy"><div class="corners"><div class="sidebar"></div></div>{title}</div>')
         else:
-            stage = f'<div class="stage"><div class="window plain"><div class="buttons">{buttons}</div></div></div>'
+            stage = f'<div class="stage"><div class="window plain"><div class="sidebar"></div><div class="buttons">{buttons}</div></div></div>'
         engine = f'<p class="engine">{html.escape(e["engine"])}</p>' if e.get("engine") else ""
         source = e.get("source") or ""
         source_link = (
@@ -170,9 +170,9 @@ def gallery(entries):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trois Themes</title>
 <style>
-  :root {{ --bg: #f5f5f7; --desk: #e4e4e8; --window: #fff; --text: #1d1d1f; --muted: #6e6e73; --faint: #a1a1a6; --accent: #0071e3; --line: #d2d2d7; }}
+  :root {{ --bg: #f5f5f7; --desk: #e4e4e8; --window: #fff; --text: #1d1d1f; --muted: #6e6e73; --faint: #a1a1a6; --accent: #0071e3; --line: #d2d2d7; --sidebar: rgba(0, 0, 0, .06); }}
   @media (prefers-color-scheme: dark) {{
-    :root {{ --bg: #1d1d1f; --desk: #2c2c2e; --window: #3a3a3c; --text: #f5f5f7; --muted: #a1a1a6; --faint: #6e6e73; --accent: #2997ff; --line: #48484a; }}
+    :root {{ --bg: #1d1d1f; --desk: #2c2c2e; --window: #3a3a3c; --text: #f5f5f7; --muted: #a1a1a6; --faint: #6e6e73; --accent: #2997ff; --line: #48484a; --sidebar: rgba(0, 0, 0, .2); }}
   }}
   body {{ margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; }}
   main {{ max-width: 960px; margin: 0 auto; padding: 32px 16px; }}
@@ -196,6 +196,11 @@ def gallery(entries):
   /* The app's 168x112 preview space, centered. Frames bigger than it are clipped. */
   .stage {{ position: relative; width: var(--fw, 168px); height: var(--fh, 112px); flex: none; }}
   .window {{ position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); background: var(--window); border-radius: 8px; box-sizing: border-box; }}
+  /* A sidebar down the window's left, so the buttons sit where most Mac apps put them. 40% of the window
+     within 60 to 72px, inset 4px, left out of windows under 110px. Kept in step with WindowSurface in the app. */
+  .window, .corners {{ container-type: inline-size; }}
+  .sidebar {{ position: absolute; left: 4px; top: 4px; bottom: 4px; width: clamp(60px, 40%, 72px); border-radius: 4px; background: var(--sidebar); }}
+  @container (max-width: 109.9px) {{ .sidebar {{ display: none; }} }}
   .window.plain {{ inset: 12px; border: 0.5px solid var(--line); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }}
   .frame {{ position: absolute; left: 0; top: 0; image-rendering: pixelated; }}
   /* The window's corners over the frame. On screen the window hides the corner fill that reaches under its

@@ -1,0 +1,3 @@
+Ooouuuh! Lollipop...
+Kaleidoscope scheme, converted from ooouuuh!lollipop.sit
+Author: Rafael Ramskogler

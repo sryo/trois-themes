@@ -1,0 +1,17 @@
+{
+  "name": "Bravado",
+  "author": "Janet Parris",
+  "version": 1,
+  "engine": "Kaleidoscope 2.x",
+  "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/bravado.sit",
+  "buttons": {
+    "closeDisabled": "close_disabled.png",
+    "closeDown": "close_down.png",
+    "close": "close_up.png",
+    "zoomDisabled": "max_disabled.png",
+    "zoomDown": "max_down.png",
+    "zoom": "max_up.png",
+    "minimizeDisabled": "min_disabled.png",
+    "minimize": "min_up.png"
+  }
+}

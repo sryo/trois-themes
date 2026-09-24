@@ -1,0 +1,15 @@
+{
+  "name": "Hi-Res",
+  "author": "Jason Green",
+  "version": 1,
+  "engine": "Kaleidoscope 1.x",
+  "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/hi-res.sit",
+  "buttons": {
+    "closeDown": "close_down.png",
+    "close": "close_up.png",
+    "zoomDown": "max_down.png",
+    "zoom": "max_up.png",
+    "minimizeDown": "min_down.png",
+    "minimize": "min_up.png"
+  }
+}

@@ -145,15 +145,15 @@ def gallery(entries):
 <main>
   <h1>Trois Themes</h1>
   <p class="intro">Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready to install in
-    <a href="https://github.com/sryo/trois">Trois</a>. Install opens Trois and applies the theme.</p>
+    <a href="https://github.com/trois-dev/trois">Trois</a>. Install opens Trois and applies the theme.</p>
   <ul>
 {chr(10).join(cards)}
   </ul>
   <footer>
     Each theme is the work of its author. See the
-    <a href="https://github.com/sryo/trois#credits">credits</a> for the tools and archives they come from.
+    <a href="https://github.com/trois-dev/trois#credits">credits</a> for the tools and archives they come from.
     If you made one of these and want it credited differently or removed,
-    <a href="https://github.com/sryo/trois-themes/issues">open an issue</a>.
+    <a href="https://github.com/trois-dev/trois-themes/issues">open an issue</a>.
   </footer>
 </main>
 </body>

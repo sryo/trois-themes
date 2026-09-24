@@ -1,12 +1,12 @@
 # Trois Themes
 
-Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready to install in [Trois](https://github.com/sryo/trois).
+Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready to install in [Trois](https://github.com/trois-dev/trois).
 
-The gallery is at https://sryo.github.io/trois-themes/. Install opens Trois, downloads the theme and applies it. Trois can also browse and install these from Settings > Get Themes.
+The gallery is at https://trois-dev.github.io/trois-themes/. Install opens Trois, downloads the theme and applies it. Trois can also browse and install these from Settings > Get Themes.
 
 ## Credits
 
-Each theme is the work of the author named in its `theme.json`. `engine` names the tool it was made for and `source` links to where it was collected. Themes are rehosted here unmodified, with their original readmes, so they keep working with Trois. See the [Trois credits](https://github.com/sryo/trois#credits) for the tools and archives they come from.
+Each theme is the work of the author named in its `theme.json`. `engine` names the tool it was made for and `source` links to where it was collected. Themes are rehosted here unmodified, with their original readmes, so they keep working with Trois. See the [Trois credits](https://github.com/trois-dev/trois#credits) for the tools and archives they come from.
 
 If you made one of these themes and want it credited differently or taken down, open an issue and it will be handled promptly.
 

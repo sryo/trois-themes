@@ -3,6 +3,7 @@
   "author": "Rafael Laguna",
   "version": 1,
   "source": "https://www.virtualplastic.net/html/eppie.html",
+  "engine": "EppieDesktop",
   "buttons": {
     "close": "close-up.bmp",
     "closeDown": "close-down.bmp",

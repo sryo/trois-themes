@@ -3,6 +3,7 @@
   "author": "beaker",
   "version": 1,
   "source": "https://www.virtualplastic.net/html/eppie.html",
+  "engine": "EppieDesktop",
   "buttons": {
     "close": "close.bmp",
     "closeDown": "close_d.bmp",

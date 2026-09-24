@@ -3,6 +3,7 @@
   "author": "Andrew Foltz",
   "version": 1,
   "source": "https://www.virtualplastic.net/html/eppie.html",
+  "engine": "EppieDesktop",
   "buttons": {
     "close": "close window button.bmp",
     "closeDown": "close window button down.bmp",

@@ -42,6 +42,9 @@ def check_theme(theme_id):
     for key, kind in [("name", str), ("author", str), ("version", int), ("buttons", dict)]:
         if not isinstance(meta.get(key), kind):
             raise ThemeError(f"theme.json needs {key} ({kind.__name__})")
+    for key in ("engine", "source"):
+        if key in meta and not isinstance(meta[key], str):
+            raise ThemeError(f"theme.json {key} must be a string")
 
     files = []
     for dirpath, dirnames, filenames in os.walk(path):
@@ -109,7 +112,7 @@ def gallery(entries):
         <div class="preview">{images}</div>
         <h2>{html.escape(e["name"])}</h2>
         <p>by {html.escape(e["author"])}</p>
-        <a class="install" href="trois://install/{html.escape(e["id"])}">Install</a>
+{f'        <p class="engine">{html.escape(e["engine"])}</p>{chr(10)}' if e.get("engine") else ""}        <a class="install" href="trois://install/{html.escape(e["id"])}">Install</a>
       </li>""")
     return f"""<!doctype html>
 <html lang="en">
@@ -131,8 +134,9 @@ def gallery(entries):
   .preview {{ height: 48px; display: flex; align-items: center; justify-content: center; gap: 4px; }}
   .preview img {{ image-rendering: pixelated; }}
   h2 {{ font-size: 15px; font-weight: 600; margin: 8px 0 0; }}
-  li p {{ color: var(--muted); font-size: 13px; margin: 2px 0 12px; }}
-  .install {{ display: inline-block; background: var(--accent); color: #fff; border-radius: 999px; padding: 4px 16px; text-decoration: none; font-weight: 500; }}
+  li p {{ color: var(--muted); font-size: 13px; margin: 2px 0 0; }}
+  li p.engine {{ font-size: 12px; }}
+  .install {{ display: inline-block; background: var(--accent); color: #fff; border-radius: 999px; padding: 4px 16px; margin-top: 12px; text-decoration: none; font-weight: 500; }}
   footer {{ color: var(--muted); font-size: 13px; margin-top: 32px; }}
   footer a {{ color: inherit; }}
 </style>
@@ -140,14 +144,16 @@ def gallery(entries):
 <body>
 <main>
   <h1>Trois Themes</h1>
-  <p class="intro">Button themes for Trois, an homage to EppieDesktop. Install opens Trois and applies the theme.</p>
+  <p class="intro">Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready to install in
+    <a href="https://github.com/sryo/trois">Trois</a>. Install opens Trois and applies the theme.</p>
   <ul>
 {chr(10).join(cards)}
   </ul>
   <footer>
-    Themes are the work of their authors, first collected in the
-    <a href="https://www.virtualplastic.net/html/eppie.html">Virtual Plastic Eppie gallery</a>.
-    If you made one of these and want it credited differently or removed, open an issue.
+    Each theme is the work of its author. See the
+    <a href="https://github.com/sryo/trois#credits">credits</a> for the tools and archives they come from.
+    If you made one of these and want it credited differently or removed,
+    <a href="https://github.com/sryo/trois-themes/issues">open an issue</a>.
   </footer>
 </main>
 </body>
@@ -188,6 +194,7 @@ def main():
             "sha256": hashlib.sha256(data).hexdigest(),
             "download": download,
             "preview": build_previews(theme_id, meta["buttons"]),
+            "engine": meta.get("engine"),
             "source": meta.get("source"),
         })
 

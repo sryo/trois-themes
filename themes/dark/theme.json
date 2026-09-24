@@ -3,6 +3,7 @@
   "author": "schminimalischt",
   "version": 1,
   "source": "https://www.virtualplastic.net/html/eppie.html",
+  "engine": "EppieDesktop",
   "buttons": {
     "close": "close_01.bmp",
     "closeDown": "close_01down.bmp",

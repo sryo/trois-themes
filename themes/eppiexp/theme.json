@@ -3,6 +3,7 @@
   "author": "buvysoft",
   "version": 1,
   "source": "https://www.virtualplastic.net/html/eppie.html",
+  "engine": "EppieDesktop",
   "buttons": {
     "close": "Close-Up.bmp",
     "closeDown": "Close-Down.bmp",

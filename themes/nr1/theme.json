@@ -3,6 +3,7 @@
   "author": "Scott A. Munro",
   "version": 1,
   "source": "https://www.virtualplastic.net/html/eppie.html",
+  "engine": "EppieDesktop",
   "buttons": {
     "close": "1closeup.bmp",
     "closeDown": "1closedn.bmp",

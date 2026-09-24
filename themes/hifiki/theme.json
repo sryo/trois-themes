@@ -3,6 +3,7 @@
   "author": "kepplah",
   "version": 1,
   "source": "https://www.virtualplastic.net/html/eppie.html",
+  "engine": "EppieDesktop",
   "buttons": {
     "close": "close_up copy.bmp",
     "closeDown": "close_dwn copy.bmp",

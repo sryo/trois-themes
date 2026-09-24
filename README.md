@@ -1,12 +1,12 @@
 # Trois Themes
 
-Button themes for [Trois](https://github.com/sryo/trois), an homage to EppieDesktop by Jeff Epstein.
+Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready to install in [Trois](https://github.com/sryo/trois).
 
 The gallery is at https://sryo.github.io/trois-themes/. Install opens Trois, downloads the theme and applies it. Trois can also browse and install these from Settings > Get Themes.
 
 ## Credits
 
-Each theme is the work of the author named in its `theme.json`. Most were first collected in the [Virtual Plastic Eppie gallery](https://www.virtualplastic.net/html/eppie.html) and are rehosted here unmodified, with their original readmes, so they keep working with Trois.
+Each theme is the work of the author named in its `theme.json`. `engine` names the tool it was made for and `source` links to where it was collected. Themes are rehosted here unmodified, with their original readmes, so they keep working with Trois. See the [Trois credits](https://github.com/sryo/trois#credits) for the tools and archives they come from.
 
 If you made one of these themes and want it credited differently or taken down, open an issue and it will be handled promptly.
 
@@ -21,6 +21,8 @@ If you made one of these themes and want it credited differently or taken down, 
      "name": "My Theme",
      "author": "Your Name",
      "version": 1,
+     "engine": "EppieDesktop",
+     "source": "https://example.com/where-it-came-from",
      "buttons": {
        "close": "close_up.png",
        "closeDown": "close_down.png",
@@ -33,6 +35,8 @@ If you made one of these themes and want it credited differently or taken down, 
    ```
 
    Button keys: `close`, `closeDown`, `closeDisabled`, `minimize`, `minimizeDown`, `minimizeDisabled`, `zoom`, `zoomDown`, `zoomDisabled`, `restore`, `restoreDown`, `help`, `helpDown`. At least one of `close`, `minimize` or `zoom` is required.
+
+   `engine` and `source` are optional. `engine` is the tool the theme was made for, such as `EppieDesktop`, `Kaleidoscope 1.x` or `Kaleidoscope 2.x`; leave it out for themes made for Trois. `source` is a URL for the original download or gallery.
 
 4. Check it with `python3 scripts/build.py --check` (needs `pip install pillow`) and open a pull request.
 

@@ -3,6 +3,7 @@
   "author": "Johnny",
   "version": 1,
   "source": "https://www.virtualplastic.net/html/eppie.html",
+  "engine": "EppieDesktop",
   "buttons": {
     "close": "dot_close_u.bmp",
     "closeDown": "dot_close_d.bmp",

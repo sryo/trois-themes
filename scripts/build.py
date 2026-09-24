@@ -104,14 +104,16 @@ def build_previews(theme_id, buttons):
     return previews
 
 
-# Draws the frame for the gallery card. Kept out of index.json, which the app reads.
-def build_frame_preview(theme_id, name):
-    rendered = frame.preview(os.path.join(THEMES, theme_id, "frame"), name)
+# Draws the frame for the gallery card, buttons included, so a card is one
+# image. Kept out of index.json, which the app reads.
+def build_frame_preview(theme_id, name, buttons):
+    paths = [os.path.join(THEMES, theme_id, buttons[k]) if k in buttons else None for k in ("close", "minimize", "zoom")]
+    rendered = frame.preview(os.path.join(THEMES, theme_id, "frame"), name, paths)
     if rendered is None:
         return None
-    out = f"previews/{theme_id}/frame.png"
+    out = f"previews/{theme_id}/frame.webp"
     os.makedirs(os.path.dirname(os.path.join(SITE, out)), exist_ok=True)
-    rendered["image"].save(os.path.join(SITE, out), optimize=True)
+    rendered["image"].save(os.path.join(SITE, out), lossless=True, method=6)
     return {"image": out, "size": rendered["size"], "window": rendered["window"], "title": rendered["title"]}
 
 
@@ -138,32 +140,29 @@ def gallery(entries):
         if framed:
             fw, fh = framed["size"]
             wx, wy, ww, wh = framed["window"]
-            window = f'left:{px(wx)};top:{px(wy)};width:{px(ww)};height:{px(wh)}'
             title = ""
             if framed["title"]:
                 tx, ty, tw, th = framed["title"]["box"]
                 emboss = f';text-shadow:1px 1px 0 {framed["title"]["emboss"]}' if framed["title"].get("emboss") else ""
                 title = (f'<span class="title" style="left:{px(tx)};top:{px(ty)};width:{px(tw)};height:{px(th)};'
                          f'line-height:{px(th)};color:{framed["title"]["color"]}{emboss}">{html.escape(e["name"])}</span>')
-            stage = (f'<div class="stage framed" style="width:{px(fw)};height:{px(fh)}"><div class="window" style="{window}"></div>'
-                     f'<img class="frame" src="{html.escape(framed["image"])}" alt="" width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy">'
-                     f'<div class="buttons" style="{window}">{buttons}</div>{title}</div>')
+            # The frame image holds the buttons too.
+            stage = (f'<div class="stage" style="--fw:{px(fw)};--fh:{px(fh)};--x:{px(wx)};--y:{px(wy)};--w:{px(ww)};--h:{px(wh)}">'
+                     f'<div class="window"></div><img class="frame" src="{html.escape(framed["image"])}" alt="" '
+                     f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy">{title}</div>')
         else:
             stage = f'<div class="stage"><div class="window plain"><div class="buttons">{buttons}</div></div></div>'
         engine = f'<p class="engine">{html.escape(e["engine"])}</p>' if e.get("engine") else ""
         source = e.get("source") or ""
         source_link = (
-            f'\n        <a class="source" href="{html.escape(source)}">Source</a>'
+            f'<a class="source" href="{html.escape(source)}">Source</a>'
             if source.startswith(("https://", "http://")) else ""
         )
         search = html.escape(f'{e["name"]} {e["author"]}'.lower())
-        cards.append(f"""      <li data-search="{search}" data-engine="{html.escape(e.get("engine") or "")}">
-        <a class="card" href="trois://install/{html.escape(e["id"])}" title="Install and apply in Trois">
-          <div class="desk">{stage}<span class="badge" aria-hidden="true"></span></div>
-          <h2>{html.escape(e["name"])}</h2>
-          <p>by {html.escape(e["author"])}</p>{engine}
-        </a>{source_link}
-      </li>""")
+        cards.append(f'<li data-search="{search}" data-engine="{html.escape(e.get("engine") or "")}">'
+                     f'<a class="card" href="trois://install/{html.escape(e["id"])}" title="Install and apply in Trois">'
+                     f'<div class="desk">{stage}<span class="badge" aria-hidden="true"></span></div>'
+                     f'<h2>{html.escape(e["name"])}</h2><p>by {html.escape(e["author"])}</p>{engine}</a>{source_link}</li>')
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -182,7 +181,6 @@ def gallery(entries):
   .intro a, footer a {{ color: inherit; }}
   ul {{ list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 24px 16px; }}
   li {{ text-align: center; min-width: 0; content-visibility: auto; contain-intrinsic-size: auto 200px; }}
-  li[hidden] {{ display: none; }}
   .controls {{ display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 0 0 20px; }}
   .controls input {{ flex: 1 1 220px; font: inherit; color: inherit; background: var(--window); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }}
   .controls input:focus {{ outline: 2px solid var(--accent); outline-offset: -1px; }}
@@ -196,12 +194,11 @@ def gallery(entries):
   .desk {{ position: relative; aspect-ratio: 3 / 2; background: var(--desk); border: 1px solid var(--line); border-radius: 8px; box-sizing: border-box; overflow: hidden;
     display: grid; place-items: center; transition: border-color .15s, box-shadow .15s; }}
   /* The app's 168x112 preview space, centered. Frames bigger than it are clipped. */
-  .stage {{ position: relative; width: 168px; height: 112px; flex: none; }}
-  .window {{ position: absolute; background: var(--window); border-radius: 8px; box-sizing: border-box; }}
+  .stage {{ position: relative; width: var(--fw, 168px); height: var(--fh, 112px); flex: none; }}
+  .window {{ position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); background: var(--window); border-radius: 8px; box-sizing: border-box; }}
   .window.plain {{ inset: 12px; border: 0.5px solid var(--line); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }}
   .frame {{ position: absolute; left: 0; top: 0; image-rendering: pixelated; }}
   .buttons {{ position: absolute; inset: 0; padding: 8px; box-sizing: border-box; display: flex; align-items: flex-start; gap: 4px; }}
-  .framed .buttons {{ inset: auto; }}
   .title {{ position: absolute; font-size: 12px; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
   /* Buttons draw at one CSS pixel per image pixel, like on screen. */
   .buttons img {{ image-rendering: pixelated; flex: none; }}
@@ -244,29 +241,44 @@ def gallery(entries):
 </main>
 <script>
   // Filters the cards by search text and engine. Without JavaScript every card shows.
-  const cards = [...document.querySelectorAll("#themes li")];
+  // Matches are put back into the list rather than hidden in place, which
+  // restyles far less with thousands of cards.
+  const list = document.getElementById("themes");
+  const cards = [...list.children];
+  const keys = cards.map(card => card.dataset.search);
+  const cardEngines = cards.map(card => card.dataset.engine);
   const search = document.getElementById("search");
+  const count = document.getElementById("count");
+  const empty = document.getElementById("empty");
   const buttons = [...document.querySelectorAll(".engines button")];
   let engine = "";
+  // Engine and words the list shows now. It starts with every card.
+  let shownKey = "\\n";
   function update() {{
     const words = search.value.toLowerCase().split(/\\s+/).filter(Boolean);
-    let shown = 0;
-    for (const card of cards) {{
-      const match = (!engine || card.dataset.engine === engine) && words.every(w => card.dataset.search.includes(w));
-      card.hidden = !match;
-      if (match) shown++;
-    }}
-    document.getElementById("count").textContent = shown === cards.length ? `${{shown}} themes` : `${{shown}} of ${{cards.length}}`;
-    document.getElementById("empty").hidden = shown > 0;
+    const key = engine + "\\n" + words.join(" ");
+    if (key === shownKey) return;
+    shownKey = key;
+    const shown = cards.filter((card, i) => (!engine || cardEngines[i] === engine) && words.every(w => keys[i].includes(w)));
+    list.replaceChildren(...shown);
+    count.textContent = shown.length === cards.length ? `${{shown.length}} themes` : `${{shown.length}} of ${{cards.length}}`;
+    empty.hidden = shown.length > 0;
   }}
-  search.addEventListener("input", update);
+  let timer;
+  search.addEventListener("input", () => {{
+    clearTimeout(timer);
+    timer = setTimeout(update, 120);
+  }});
   for (const button of buttons) {{
     button.addEventListener("click", () => {{
       engine = button.dataset.engine;
       buttons.forEach(b => b.setAttribute("aria-pressed", String(b === button)));
+      clearTimeout(timer);
       update();
     }});
   }}
+  // A search the browser restored still applies.
+  count.textContent = `${{cards.length}} themes`;
   update();
 </script>
 </body>
@@ -311,7 +323,7 @@ def main():
             "engine": meta.get("engine"),
             "source": meta.get("source"),
         })
-        card_frames[theme_id] = build_frame_preview(theme_id, meta["name"])
+        card_frames[theme_id] = build_frame_preview(theme_id, meta["name"], meta["buttons"])
 
     entries.sort(key=sort_key)
     with open(os.path.join(SITE, "index.json"), "w") as f:

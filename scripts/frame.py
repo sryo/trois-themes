@@ -472,9 +472,38 @@ def load(frame_dir):
         return None
 
 
-def preview(frame_dir, title):
-    """Renders the frame around a window that fills CANVAS. Returns the image
-    at SCALE, its size in points, the window rect and the title box, or None."""
+# Buttons sit this far into the window, this far apart, like the page's CSS.
+BUTTON_INSET = 8
+BUTTON_GAP = 4
+# A faint dot holds the spot of a missing button, like the page's .dot.
+DOT_SIZE = 14
+DOT_COLOR = (0xa1, 0xa1, 0xa6, round(255 * 0.4))
+
+
+def draw_buttons(canvas, origin, buttons):
+    """Draws the buttons left to right from `origin`, top aligned, at one
+    point per image pixel. `buttons` holds an image path, or None for a dot."""
+    x, y = origin
+    for path in buttons:
+        image = load_image(path) if path else None
+        if image is None:
+            k = SCALE * 4
+            mask = Image.new("L", (DOT_SIZE * k, DOT_SIZE * k), 0)
+            ImageDraw.Draw(mask).ellipse((0, 0, DOT_SIZE * k - 1, DOT_SIZE * k - 1), fill=DOT_COLOR[3])
+            mask = mask.resize((DOT_SIZE * SCALE, DOT_SIZE * SCALE), Image.BOX)
+            dot = Image.new("RGBA", mask.size, DOT_COLOR[:3] + (0,))
+            dot.putalpha(mask)
+            canvas.image.alpha_composite(dot, (round(x * SCALE), round(y * SCALE)))
+            x += DOT_SIZE + BUTTON_GAP
+            continue
+        canvas.draw(image, (0, 0, *image.size), (x, y, x + image.width, y + image.height))
+        x += image.width + BUTTON_GAP
+
+
+def preview(frame_dir, title, buttons=()):
+    """Renders the frame around a window that fills CANVAS, with `buttons`
+    (see draw_buttons) at the window's top left. Returns the image at SCALE,
+    its size in points, the window rect and the title box, or None."""
     frame = load(frame_dir)
     if frame is None:
         return None
@@ -484,4 +513,7 @@ def preview(frame_dir, title):
         image, size, title_box = frame.render(window, title)
     except (ValueError, TypeError, IndexError, ZeroDivisionError):
         return None
+    canvas = Canvas(size)
+    canvas.image = image
+    draw_buttons(canvas, (left + BUTTON_INSET, top + BUTTON_INSET), buttons)
     return {"image": image, "size": size, "window": (left, top, *window), "title": title_box}

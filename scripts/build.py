@@ -105,7 +105,7 @@ def build_previews(theme_id, buttons):
 
 
 # Draws the frame for the gallery card, buttons included, so a card is one
-# image. Kept out of index.json, which the app reads.
+# image. The app's Gallery tab reads it from index.json too.
 def build_frame_preview(theme_id, name, buttons):
     paths = [os.path.join(THEMES, theme_id, buttons[k]) if k in buttons else None for k in ("close", "minimize", "zoom")]
     rendered = frame.preview(os.path.join(THEMES, theme_id, "frame"), name, paths)
@@ -305,7 +305,6 @@ def main():
     shutil.rmtree(SITE, ignore_errors=True)
     os.makedirs(os.path.join(SITE, "themes"))
     entries = []
-    card_frames = {}
     for theme_id, meta, files in checked:
         data = build_zip(theme_id, files)
         download = f"themes/{theme_id}-{meta['version']}.zip"
@@ -323,14 +322,16 @@ def main():
             "engine": meta.get("engine"),
             "source": meta.get("source"),
         })
-        card_frames[theme_id] = build_frame_preview(theme_id, meta["name"], meta["buttons"])
+        framed = build_frame_preview(theme_id, meta["name"], meta["buttons"])
+        if framed:
+            entries[-1]["frame"] = framed
 
     entries.sort(key=sort_key)
     with open(os.path.join(SITE, "index.json"), "w") as f:
         json.dump({"format": 1, "themes": entries}, f, indent=1)
         f.write("\n")
     with open(os.path.join(SITE, "index.html"), "w") as f:
-        f.write(gallery([{**e, "frame": card_frames[e["id"]]} for e in entries]))
+        f.write(gallery(entries))
     print(f"built {len(entries)} themes into {os.path.relpath(SITE, ROOT)}")
 
 

@@ -36,3 +36,11 @@ Change its files and raise `version` in `theme.json`. Trois offers the update to
 ## Credits and takedowns
 
 If you made a theme here and want it credited differently or removed, open an issue with the "Credit or takedown" template. It will be handled promptly.
+
+## How the catalog is built
+
+`scripts/build.py` checks every theme and writes `site/`: one zip per theme with fixed timestamps, so its SHA-256 only changes when the files do, PNG previews, `index.json` and the gallery page. The workflow in `.github/workflows/pages.yml` runs it on every pull request and publishes `site/` to GitHub Pages from `main`.
+
+`.github/workflows/import.yml` handles submissions. When a maintainer adds the `import` label to a submission issue, it downloads the zip, unpacks it into `themes/` with `scripts/import_theme.py`, runs the same check and opens a pull request.
+
+Trois only installs themes listed in `index.json`, checks each download against its SHA-256 and size, and rejects zips with symlinks, paths outside the theme folder or other file types.

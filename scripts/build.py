@@ -207,29 +207,46 @@ def gallery(entries):
 <style>
   :root {{ --bg: #f5f5f7; --desk: #e4e4e8; --window: #fff; --text: #1d1d1f; --muted: #6e6e73; --faint: #a1a1a6; --accent: #0071e3; --line: #d2d2d7; --sidebar: rgba(0, 0, 0, .06); }}
   @media (prefers-color-scheme: dark) {{
-    :root {{ --bg: #1d1d1f; --desk: #2c2c2e; --window: #3a3a3c; --text: #f5f5f7; --muted: #a1a1a6; --faint: #6e6e73; --accent: #2997ff; --line: #48484a; --sidebar: rgba(0, 0, 0, .2); }}
+    :root {{ --bg: #1d1d1f; --desk: #323232; --window: #1e1e1e; --text: #f5f5f7; --muted: #a1a1a6; --faint: #6e6e73; --accent: #2997ff; --line: #48484a; --sidebar: rgba(255, 255, 255, .08); }}
   }}
   body {{ margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; }}
-  main {{ max-width: 960px; margin: 0 auto; padding: 32px 16px; }}
-  h1 {{ font-weight: 300; font-size: 40px; margin: 0 0 8px; }}
-  .intro {{ color: var(--muted); margin: 0 0 24px; }}
-  .intro a, footer a {{ color: inherit; }}
-  .setup {{ background: var(--window); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 0 0 24px; font-size: 14px; }}
-  .setup h2 {{ font-size: 15px; font-weight: 600; margin: 0 0 6px; white-space: normal; }}
-  .setup ol {{ margin: 0; padding-left: 20px; }}
-  .setup li {{ text-align: left; content-visibility: visible; }}
-  .setup li + li {{ margin-top: 3px; }}
-  .setup p {{ color: var(--muted); font-size: 13px; margin: 8px 0 0; }}
-  .setup a {{ color: var(--accent); }}
+  main {{ max-width: 960px; margin: 0 auto; padding: 20px 16px 32px; }}
+  footer a {{ color: inherit; }}
   ul {{ list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 24px 16px; }}
   li {{ text-align: center; min-width: 0; content-visibility: auto; contain-intrinsic-size: auto 200px; }}
-  .controls {{ display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 0 0 20px; }}
-  .controls input {{ flex: 1 1 220px; font: inherit; color: inherit; background: var(--window); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }}
-  .controls input:focus {{ outline: 2px solid var(--accent); outline-offset: -1px; }}
-  .engines {{ display: flex; flex-wrap: wrap; gap: 6px; }}
-  .engines button {{ font: inherit; font-size: 13px; color: var(--text); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }}
-  .engines button[aria-pressed="true"] {{ background: var(--accent); border-color: var(--accent); color: #fff; }}
-  .count {{ color: var(--muted); font-size: 13px; }}
+  /* One slim bar like a Mac toolbar, kept quiet so the thumbnails carry the color. */
+  .bar {{ position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px); backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid var(--line); }}
+  .bar-in {{ max-width: 960px; margin: 0 auto; padding: 8px 16px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; }}
+  .bar h1 {{ font-size: 14px; font-weight: 600; margin: 0 6px 0 0; white-space: nowrap; }}
+  .bar input, .bar select {{ font: inherit; font-size: 13px; color: var(--text); background: var(--window); border: 1px solid var(--line); border-radius: 6px; height: 28px; box-sizing: border-box; }}
+  .bar input {{ flex: 1 1 auto; min-width: 0; max-width: 320px; padding: 0 8px; }}
+  .bar select {{ padding: 0 6px; color: var(--muted); }}
+  .bar input:focus, .bar select:focus {{ outline: 2px solid var(--accent); outline-offset: -1px; }}
+  .count {{ font-size: 12px; color: var(--faint); white-space: nowrap; }}
+  .links {{ margin-left: auto; display: flex; align-items: center; gap: 14px; font-size: 13px; white-space: nowrap; }}
+  .submit {{ color: var(--muted); text-decoration: none; }}
+  .submit:hover {{ color: var(--text); }}
+  .get {{ position: relative; }}
+  .get summary {{ list-style: none; cursor: pointer; color: var(--accent); padding: 4px 0; }}
+  .get summary::-webkit-details-marker {{ display: none; }}
+  .get summary:focus-visible, .submit:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }}
+  .panel {{ position: absolute; right: 0; top: calc(100% + 8px); width: min(340px, calc(100vw - 32px)); box-sizing: border-box; white-space: normal;
+    background: var(--window); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, .12); }}
+  .panel p {{ margin: 0; color: var(--muted); }}
+  .panel ol {{ margin: 8px 0 0; padding-left: 18px; }}
+  .panel li {{ text-align: left; content-visibility: visible; }}
+  .panel li + li {{ margin-top: 3px; }}
+  .panel a {{ color: var(--accent); }}
+  /* Under 600px the bar takes two rows: title and links, then search and engine. */
+  @media (max-width: 600px) {{
+    .bar-in {{ flex-wrap: wrap; row-gap: 6px; }}
+    .bar h1 {{ order: 1; }}
+    .links {{ order: 2; }}
+    .bar input {{ order: 3; flex: 1 1 50%; max-width: none; }}
+    .bar select {{ order: 4; max-width: 44%; }}
+    .count {{ display: none; }}
+  }}
   .empty {{ color: var(--muted); text-align: center; padding: 48px 0; }}
   .card {{ display: block; color: inherit; text-decoration: none; border-radius: 10px; outline: none; }}
   /* A small window on a desktop-like backdrop, like the app's theme grid. */
@@ -268,27 +285,31 @@ def gallery(entries):
 </style>
 </head>
 <body>
-<main>
-  <h1>Trois Themes</h1>
-  <p class="intro">{len(entries)} window themes from classic customizers like EppieDesktop and Kaleidoscope, ready for
-    <a href="https://github.com/trois-dev/trois">Trois</a>. Click a theme to install and apply it in Trois.
-    Made one? <a href="https://github.com/trois-dev/trois-themes/issues/new?template=submit_theme.yml">Submit a theme</a>.</p>
-  <section class="setup" aria-labelledby="setup">
-    <h2 id="setup">Get Trois</h2>
-    <ol>
-      <li>Download the latest zip from <a href="https://github.com/trois-dev/trois/releases">Trois releases</a>, unzip it and move Trois.app to Applications.</li>
-      <li>Open Trois and give it Accessibility permission when asked.</li>
-      <li>Click a theme below. Trois downloads it and applies it.</li>
-    </ol>
-    <p>Needs macOS 13 or later on Apple silicon. For seamless injection mode, see the <a href="https://github.com/trois-dev/trois#enabling-injection-mode">README</a>.</p>
-  </section>
-  <div class="controls">
-    <input type="search" id="search" placeholder="Search by name or author" aria-label="Search themes" autocomplete="off">
-    <div class="engines" role="group" aria-label="Engine">
-{chr(10).join(f'      <button type="button" data-engine="{html.escape(x)}" aria-pressed="{str(x == "").lower()}">{html.escape(x or "All")}</button>' for x in ["", *engines])}
-    </div>
+<header class="bar">
+  <div class="bar-in">
+    <h1>Trois Themes</h1>
+    <input type="search" id="search" placeholder="Search {len(entries)} themes" aria-label="Search themes" autocomplete="off">
+    <select id="engine" aria-label="Engine">
+{chr(10).join(f'      <option value="{html.escape(x)}">{html.escape(x or "All engines")}</option>' for x in ["", *engines])}
+    </select>
     <span class="count" id="count" aria-live="polite"></span>
+    <div class="links">
+      <a class="submit" href="https://github.com/trois-dev/trois-themes/issues/new?template=submit_theme.yml">Submit a theme</a>
+      <details class="get">
+        <summary>Get Trois</summary>
+        <div class="panel">
+          <p>Trois is a Mac app that applies these window themes.</p>
+          <ol>
+            <li>Download Trois from <a href="https://github.com/trois-dev/trois/releases">releases</a> (for Macs with Apple chips) and move it to Applications.</li>
+            <li>Open it and allow Accessibility when asked.</li>
+            <li>Click a theme. Trois downloads and applies it.</li>
+          </ol>
+        </div>
+      </details>
+    </div>
   </div>
+</header>
+<main>
   <ul id="themes">
 {chr(10).join(cards)}
   </ul>
@@ -311,18 +332,19 @@ def gallery(entries):
   const search = document.getElementById("search");
   const count = document.getElementById("count");
   const empty = document.getElementById("empty");
-  const buttons = [...document.querySelectorAll(".engines button")];
-  let engine = "";
+  const engineSelect = document.getElementById("engine");
   // Engine and words the list shows now. It starts with every card.
   let shownKey = "\\n";
   function update() {{
     const words = search.value.toLowerCase().split(/\\s+/).filter(Boolean);
+    const engine = engineSelect.value;
     const key = engine + "\\n" + words.join(" ");
     if (key === shownKey) return;
     shownKey = key;
     const shown = cards.filter((card, i) => (!engine || cardEngines[i] === engine) && words.every(w => keys[i].includes(w)));
     list.replaceChildren(...shown);
-    count.textContent = shown.length === cards.length ? `${{shown.length}} themes` : `${{shown.length}} of ${{cards.length}}`;
+    // The search placeholder carries the total, so the count only shows while filtering.
+    count.textContent = engine || words.length ? `${{shown.length}} of ${{cards.length}}` : "";
     empty.hidden = shown.length > 0;
   }}
   let timer;
@@ -330,16 +352,20 @@ def gallery(entries):
     clearTimeout(timer);
     timer = setTimeout(update, 120);
   }});
-  for (const button of buttons) {{
-    button.addEventListener("click", () => {{
-      engine = button.dataset.engine;
-      buttons.forEach(b => b.setAttribute("aria-pressed", String(b === button)));
-      clearTimeout(timer);
-      update();
-    }});
-  }}
-  // A search the browser restored still applies.
-  count.textContent = `${{cards.length}} themes`;
+  engineSelect.addEventListener("change", () => {{
+    clearTimeout(timer);
+    update();
+  }});
+  // Close the Get Trois panel on an outside click or Escape.
+  const get = document.querySelector(".get");
+  document.addEventListener("click", e => {{ if (!get.contains(e.target)) get.open = false; }});
+  document.addEventListener("keydown", e => {{
+    if (e.key === "Escape" && get.open) {{
+      get.open = false;
+      get.querySelector("summary").focus();
+    }}
+  }});
+  // A search or engine the browser restored still applies.
   update();
 </script>
 </body>

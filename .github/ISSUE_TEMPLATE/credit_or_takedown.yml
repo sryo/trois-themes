@@ -1,0 +1,24 @@
+name: Credit or takedown
+description: You made a theme here and want it credited differently or removed
+labels: [credit]
+body:
+  - type: input
+    id: theme
+    attributes:
+      label: Theme
+    validations:
+      required: true
+  - type: dropdown
+    id: request
+    attributes:
+      label: Request
+      options:
+        - Change the credit
+        - Remove the theme
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: How it should be credited, or anything that helps confirm you're the author.

@@ -1,0 +1,22 @@
+name: Broken theme
+description: A theme looks wrong or won't install
+labels: [broken theme]
+body:
+  - type: input
+    id: theme
+    attributes:
+      label: Theme
+      description: The folder name under themes/, or the name shown in the gallery.
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What's wrong
+      description: Screenshots help.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Trois and macOS version

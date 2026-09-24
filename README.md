@@ -4,7 +4,7 @@
 
 Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready to install in [Trois](https://github.com/trois-dev/trois).
 
-The gallery is at https://trois-dev.github.io/trois-themes/. Install opens Trois, downloads the theme and applies it. Trois can also browse and install these from Settings > Get Themes.
+The gallery is at https://trois-dev.github.io/trois-themes/. Install opens Trois, downloads the theme and applies it. Trois can also browse and install these from Settings > Gallery.
 
 To get Trois, download the zip from [Trois releases](https://github.com/trois-dev/trois/releases), unzip it, move Trois.app to Applications and give it Accessibility permission when asked. It needs macOS 13 or later on Apple silicon.
 
@@ -21,7 +21,7 @@ The easy way: [open a submission](https://github.com/trois-dev/trois-themes/issu
 ## Adding a theme
 
 1. Add a folder under `themes/`. Its name is the theme's id: letters, digits, `-` or `_`.
-2. Put the button images in it (BMP, PNG, JPEG, GIF or TIFF, each under 1 MB), plus any readme.
+2. Put the button images in it (BMP, PNG, JPEG, GIF, TIFF or ICO, each under 1 MB), plus any readme.
 3. Add a `theme.json`:
 
    ```json
@@ -42,7 +42,7 @@ The easy way: [open a submission](https://github.com/trois-dev/trois-themes/issu
    }
    ```
 
-   Button keys: `close`, `closeDown`, `closeDisabled`, `minimize`, `minimizeDown`, `minimizeDisabled`, `zoom`, `zoomDown`, `zoomDisabled`, `restore`, `restoreDown`, `help`, `helpDown`. At least one of `close`, `minimize` or `zoom` is required.
+   Button keys: `close`, `closeHover`, `closeDown`, `closeDisabled`, `minimize`, `minimizeHover`, `minimizeDown`, `minimizeDisabled`, `zoom`, `zoomHover`, `zoomDown`, `zoomDisabled`, `restore`, `restoreDown`, `help`, `helpHover`, `helpDown`, `helpDisabled`. At least one of `close`, `minimize` or `zoom` is required.
 
    `engine` and `source` are optional. `engine` is the tool the theme was made for, such as `EppieDesktop`, `Kaleidoscope 1.x` or `Kaleidoscope 2.x`; leave it out for themes made for Trois. `source` is a URL for the original download or gallery.
 

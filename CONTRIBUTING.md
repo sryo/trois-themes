@@ -20,7 +20,7 @@ Follow [Adding a theme](README.md#adding-a-theme) in the README. In short:
 
 3. Open a pull request. The same check runs on every PR. Once it's merged the theme shows up in the gallery and in Trois.
 
-To preview it in the app before submitting, drop the folder onto Settings > Themes in Trois.
+To preview it in the app before submitting, drop the folder onto Settings > Installed in Trois.
 
 ## Rules
 
@@ -39,7 +39,7 @@ If you made a theme here and want it credited differently or removed, open an is
 
 ## How the catalog is built
 
-`scripts/build.py` checks every theme and writes `site/`: one zip per theme with fixed timestamps, so its SHA-256 only changes when the files do, PNG previews, `index.json` and the gallery page. The workflow in `.github/workflows/pages.yml` runs it on every pull request and publishes `site/` to GitHub Pages from `main`.
+`scripts/build.py` checks every theme and writes `site/`: one zip per theme with fixed timestamps, so its SHA-256 only changes when the files do, PNG button previews, WebP frame previews, `index.json` and the gallery page. The workflow in `.github/workflows/pages.yml` runs it on every pull request and publishes `site/` to GitHub Pages from `main`.
 
 `.github/workflows/import.yml` handles submissions. When a maintainer adds the `import` label to a submission issue, it downloads the zip, unpacks it into `themes/` with `scripts/import_theme.py`, runs the same check and opens a pull request.
 

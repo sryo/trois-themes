@@ -176,7 +176,7 @@ def title_css(t):
         css.append(f'text-shadow:1px 1px 0 {t["emboss"]}')
     if t.get("font"):
         # Quotes stripped so a family name can't close the attribute.
-        family = re.sub(r'["\'<>&;]', "", t["font"])
+        family = re.sub(r'["\'<>&;\\]', "", t["font"])
         css.append(f"font-family:'{family}',-apple-system,BlinkMacSystemFont,sans-serif")
     if t.get("size"):
         css.append(f'font-size:{px(t["size"])}')
@@ -185,6 +185,11 @@ def title_css(t):
     if t.get("align"):
         css.append(f'text-align:{t["align"]}')
     return ";".join(css)
+
+
+# Mirrors engineLabel in Trois. Kaleidoscope called its themes schemes.
+def engine_label(engine):
+    return f"{engine} scheme" if engine.startswith("Kaleidoscope") else engine
 
 
 def gallery(entries):
@@ -213,7 +218,7 @@ def gallery(entries):
                      f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy"><div class="corners">{bar}</div>{title}</div>')
         else:
             stage = f'<div class="stage"><div class="window plain">{bar}<div class="buttons">{buttons}</div></div></div>'
-        engine = f'<p class="engine">{html.escape(e["engine"])}</p>' if e.get("engine") else ""
+        engine = f'<p class="engine">{html.escape(engine_label(e["engine"]))}</p>' if e.get("engine") else ""
         source = e.get("source") or ""
         source_link = (
             f'<a class="source" href="{html.escape(source)}">Source</a>'
@@ -390,6 +395,20 @@ def gallery(entries):
       get.open = false;
       get.querySelector("summary").focus();
     }}
+  }});
+  // Without Trois a card's trois:// link does nothing, so if the page is still
+  // in front a moment after a click, show how to get it.
+  list.addEventListener("click", e => {{
+    if (!e.target.closest("a.card")) return;
+    let left = false;
+    const away = () => {{ left = true; }};
+    window.addEventListener("blur", away, {{ once: true }});
+    document.addEventListener("visibilitychange", away, {{ once: true }});
+    setTimeout(() => {{
+      window.removeEventListener("blur", away);
+      document.removeEventListener("visibilitychange", away);
+      if (!left && document.hasFocus()) get.open = true;
+    }}, 1500);
   }});
   // A search or engine the browser restored still applies.
   update();

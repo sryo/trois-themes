@@ -1,0 +1,54 @@
+name: Submit a theme
+description: Add a theme to the catalog without using git
+title: "Submit: "
+labels: [theme submission]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Attach your theme as a zip. A maintainer reviews it, and a bot then opens a pull request that adds it to the catalog. You'll be credited on the commit.
+
+        The zip should hold the button images and, if you have one, a `theme.json`. Without one, name the images like `close_up.png`, `close_down.png`, `min_up.png` and `max_up.png`. See [Adding a theme](https://github.com/trois-dev/trois-themes#adding-a-theme) for the rules.
+  - type: input
+    id: name
+    attributes:
+      label: Theme name
+    validations:
+      required: true
+  - type: input
+    id: author
+    attributes:
+      label: Author
+      description: Who made the theme. If you converted someone else's, put theirs.
+    validations:
+      required: true
+  - type: dropdown
+    id: engine
+    attributes:
+      label: Made for
+      options:
+        - Trois
+        - EppieDesktop
+        - Kaleidoscope 1.x
+        - Kaleidoscope 2.x
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Link to the original download or gallery, if it came from somewhere else.
+  - type: textarea
+    id: zip
+    attributes:
+      label: Theme zip
+      description: Drag the .zip file here.
+    validations:
+      required: true
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Sharing
+      options:
+        - label: I made this theme, or it's freely shared by its author and credited to them above.
+          required: true

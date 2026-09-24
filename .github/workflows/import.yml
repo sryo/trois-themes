@@ -1,0 +1,78 @@
+# Turns a theme submission issue into a pull request once a maintainer adds the import label.
+name: Import theme
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  statuses: write
+
+concurrency:
+  group: import-${{ github.event.issue.number }}
+
+jobs:
+  import:
+    # Only people with triage access can add labels, so the label is the review gate.
+    if: github.event.label.name == 'import'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+
+      # The issue body is untrusted, so it goes in through env and never into the script text.
+      - id: theme
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: python scripts/import_theme.py
+      - run: python scripts/build.py > "$RUNNER_TEMP/build.log" 2>&1 || { cp "$RUNNER_TEMP/build.log" "$RUNNER_TEMP/import-error.md"; exit 1; }
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          THEME_ID: ${{ steps.theme.outputs.id }}
+          THEME_NAME: ${{ steps.theme.outputs.name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          SUBMITTER: ${{ github.event.issue.user.login }}
+          SUBMITTER_ID: ${{ github.event.issue.user.id }}
+        run: |
+          branch="import/$THEME_ID"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898208+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add "themes/$THEME_ID"
+          git commit --author "$SUBMITTER <$SUBMITTER_ID+$SUBMITTER@users.noreply.github.com>" \
+            -m "Add $THEME_NAME theme" -m "Submitted in #$ISSUE_NUMBER."
+          git push --force origin "$branch"
+          pr=$(gh pr list --head "$branch" --json url --jq '.[0].url')
+          if [ -z "$pr" ]; then
+            pr=$(gh pr create --base main --head "$branch" --title "Add $THEME_NAME theme" \
+              --body "Imported from #$ISSUE_NUMBER, submitted by @$SUBMITTER. Closes #$ISSUE_NUMBER.")
+          fi
+          # PRs opened with the workflow token don't trigger other workflows, so the
+          # catalog check that just passed here is reported as the required build status.
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$(git rev-parse HEAD)" \
+            -f state=success -f context=build -f description="Checked by the import workflow"
+          gh issue comment "$ISSUE_NUMBER" --body "Thanks! It passed the catalog check and is ready for review in $pr."
+
+      - if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          {
+            echo "The import didn't work:"
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/import-error.md" 2>/dev/null || echo "Something went wrong. A maintainer will check the workflow log."
+            echo '```'
+            echo
+            echo "Edit the issue to fix it, and a maintainer will run the import again."
+          } > "$RUNNER_TEMP/comment.md"
+          gh issue comment "$ISSUE_NUMBER" --body-file "$RUNNER_TEMP/comment.md"
+          gh issue edit "$ISSUE_NUMBER" --remove-label import

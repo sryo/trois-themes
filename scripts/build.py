@@ -145,7 +145,8 @@ def gallery(entries):
 <main>
   <h1>Trois Themes</h1>
   <p class="intro">Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready to install in
-    <a href="https://github.com/trois-dev/trois">Trois</a>. Install opens Trois and applies the theme.</p>
+    <a href="https://github.com/trois-dev/trois">Trois</a>. Install opens Trois and applies the theme.
+    Made one? <a href="https://github.com/trois-dev/trois-themes/issues/new?template=submit_theme.yml">Submit a theme</a>.</p>
   <ul>
 {chr(10).join(cards)}
   </ul>

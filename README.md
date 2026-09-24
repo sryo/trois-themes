@@ -10,6 +10,10 @@ Each theme is the work of the author named in its `theme.json`. `engine` names t
 
 If you made one of these themes and want it credited differently or taken down, open an issue and it will be handled promptly.
 
+## Submitting a theme
+
+The easy way: [open a submission](https://github.com/trois-dev/trois-themes/issues/new?template=submit_theme.yml), fill in the name and author, and attach a zip. A maintainer reviews it, then a bot opens a pull request that adds it, credited to you. If you're comfortable with git, open a pull request yourself as described below.
+
 ## Adding a theme
 
 1. Add a folder under `themes/`. Its name is the theme's id: letters, digits, `-` or `_`.
@@ -45,5 +49,7 @@ To update a theme, change its files and raise `version`. Trois offers the update
 ## How the catalog is built
 
 `scripts/build.py` checks every theme and writes `site/`: one zip per theme with fixed timestamps, so its SHA-256 only changes when the files do, PNG previews, `index.json` and the gallery page. The workflow in `.github/workflows/pages.yml` runs it on every pull request and publishes `site/` to GitHub Pages from `main`.
+
+`.github/workflows/import.yml` handles submissions. When a maintainer adds the `import` label to a submission issue, it downloads the zip, unpacks it into `themes/` with `scripts/import_theme.py`, runs the same check and opens a pull request.
 
 Trois only installs themes listed in `index.json`, checks each download against its SHA-256 and size, and rejects zips with symlinks, paths outside the theme folder or other file types.

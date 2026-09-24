@@ -161,7 +161,7 @@ def gallery(entries):
         search = html.escape(f'{e["name"]} {e["author"]}'.lower())
         cards.append(f'<li data-search="{search}" data-engine="{html.escape(e.get("engine") or "")}">'
                      f'<a class="card" href="trois://install/{html.escape(e["id"])}" title="Install and apply in Trois">'
-                     f'<div class="desk">{stage}<span class="badge" aria-hidden="true"></span></div>'
+                     f'<div class="desk">{stage}<span class="action" aria-hidden="true"><span>Install</span></span></div>'
                      f'<h2>{html.escape(e["name"])}</h2><p>by {html.escape(e["author"])}</p>{engine}</a>{source_link}</li>')
     return f"""<!doctype html>
 <html lang="en">
@@ -208,10 +208,12 @@ def gallery(entries):
   /* Buttons draw at one CSS pixel per image pixel, like on screen. */
   .buttons img {{ image-rendering: pixelated; flex: none; }}
   .dot {{ width: 14px; height: 14px; border-radius: 50%; background: var(--faint); opacity: .4; flex: none; }}
-  .badge {{ position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); opacity: 0; transition: opacity .15s;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 5v9M6 10l4 4 4-4'/%3E%3C/svg%3E"); }}
-  .card:hover .desk, .card:focus-visible .desk {{ border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }}
-  .card:hover .badge, .card:focus-visible .badge {{ opacity: 1; }}
+  /* The card's action in the middle on hover, like the app. The whole card is the link. */
+  .action {{ position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0, 0, 0, .15); opacity: 0; transition: opacity .15s; pointer-events: none; }}
+  .action span {{ background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 999px; box-shadow: 0 1px 2px rgba(0, 0, 0, .2); }}
+  /* 3px of accent: the 1px border and 2px around it. */
+  .card:hover .desk, .card:focus-visible .desk {{ border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }}
+  .card:hover .action, .card:focus-visible .action {{ opacity: 1; }}
   h2 {{ font-size: 13px; font-weight: 500; margin: 8px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
   li p {{ color: var(--muted); font-size: 12px; margin: 1px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
   li p.engine {{ color: var(--faint); font-size: 11px; }}

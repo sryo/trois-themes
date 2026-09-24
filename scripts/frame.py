@@ -45,19 +45,26 @@ TITLE_ALIGNS = ("left", "center", "right")
 
 # Stands in for the app's title font, 12 point semibold unless the frame's
 # title style says otherwise, when sizing the title.
+TITLE_WIDTH_BY_WEIGHT = {"regular": 0.96, "medium": 0.98, "bold": 1.03, "heavy": 1.06}
+
+
 def title_width(text, style=None):
     size = title_size(style)
     if size not in _fonts:
         _fonts[size] = ImageFont.load_default(size)
-    # Scaled up with room to spare, since browsers set it in their own font.
-    return math.ceil(_fonts[size].getlength(text) * 1.12) + 2 + title_spill(style)
+    # Scaled up with room to spare, since browsers set it in their own font,
+    # and by weight against the default semibold. Custom fonts aren't measured.
+    weight = (style or {}).get("weight")
+    factor = TITLE_WIDTH_BY_WEIGHT.get(weight, 1)
+    return math.ceil(_fonts[size].getlength(text) * 1.12 * factor) + 2 + title_spill(style)
 
 
 def title_size(style):
     size = (style or {}).get("size")
     if not isinstance(size, (int, float)) or isinstance(size, bool):
         return TITLE_SIZE
-    return round(min(max(size, TITLE_SIZES[0]), TITLE_SIZES[1]))
+    # Fractional like the app's; the browser sets it as given.
+    return min(max(size, TITLE_SIZES[0]), TITLE_SIZES[1])
 
 
 def is_color(value):

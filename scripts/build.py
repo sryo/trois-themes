@@ -187,11 +187,6 @@ def title_css(t):
     return ";".join(css)
 
 
-# Mirrors engineLabel in Trois. Kaleidoscope called its themes schemes.
-def engine_label(engine):
-    return f"{engine} scheme" if engine.startswith("Kaleidoscope") else engine
-
-
 def gallery(entries):
     engines = sorted({e["engine"] for e in entries if e.get("engine")})
     cards = []
@@ -218,7 +213,6 @@ def gallery(entries):
                      f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy"><div class="corners">{bar}</div>{title}</div>')
         else:
             stage = f'<div class="stage"><div class="window plain">{bar}<div class="buttons">{buttons}</div></div></div>'
-        engine = f'<p class="engine">{html.escape(engine_label(e["engine"]))}</p>' if e.get("engine") else ""
         source = e.get("source") or ""
         source_link = (
             f'<a class="source" href="{html.escape(source)}">Source</a>'
@@ -228,7 +222,7 @@ def gallery(entries):
         cards.append(f'<li data-search="{search}" data-engine="{html.escape(e.get("engine") or "")}">'
                      f'<a class="card" href="trois://install/{html.escape(e["id"])}" title="Install and apply in Trois">'
                      f'<div class="desk">{stage}{ACTION}</div>'
-                     f'<h2>{html.escape(e["name"])}</h2><p>by {html.escape(e["author"])}</p>{engine}</a>{source_link}</li>')
+                     f'<h2>{html.escape(e["name"])}</h2><p>by {html.escape(e["author"])}</p></a>{source_link}</li>')
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -309,7 +303,6 @@ def gallery(entries):
   .card:hover .action, .card:focus-visible .action {{ opacity: 1; }}
   h2 {{ font-size: 13px; font-weight: 500; margin: 8px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
   li p {{ color: var(--muted); font-size: 12px; margin: 1px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
-  li p.engine {{ color: var(--faint); font-size: 11px; }}
   .source {{ display: inline-block; color: var(--accent); font-size: 12px; margin-top: 2px; text-decoration: none; }}
   .source:hover {{ text-decoration: underline; }}
   footer {{ color: var(--muted); font-size: 13px; margin-top: 40px; }}

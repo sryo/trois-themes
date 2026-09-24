@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/trois-dev/trois/main/Design/Icon/TroisIcon.svg" width="96" alt="Trois logo">
+
 # Trois Themes
 
 Window themes from classic customizers like EppieDesktop and Kaleidoscope, ready to install in [Trois](https://github.com/trois-dev/trois).

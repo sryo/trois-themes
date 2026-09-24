@@ -104,6 +104,45 @@ def build_previews(theme_id, buttons):
     return previews
 
 
+# Width in points of the close, minimize and zoom row a card draws, a dot
+# standing in for a missing button. Same spacing as frame.draw_buttons.
+def button_row(theme_id, buttons):
+    widths = []
+    for key in ("close", "minimize", "zoom"):
+        image = frame.load_image(os.path.join(THEMES, theme_id, buttons[key])) if key in buttons else None
+        widths.append(image.width if image else frame.DOT_SIZE)
+    return sum(widths) + frame.BUTTON_GAP * (len(widths) - 1)
+
+
+# The sidebar in a card's window: inset 4 on three sides, 40% of the window
+# wide within 60 to 72, and wider when the buttons need it. Returns its width,
+# or None when the window can't keep 72 beside it for the Install button.
+# Kept in step with PreviewWindowLayout in the app.
+SIDEBAR_INSET = 4
+PLAIN_WINDOW = (144, 88)
+
+
+def sidebar_width(window_width, row):
+    width = max(min(72, max(60, round(window_width * 0.4))), row + 2 * SIDEBAR_INSET)
+    return width if window_width - SIDEBAR_INSET - width >= 72 else None
+
+
+def window_parts(window_width, row):
+    """The sidebar for a card's window, and the hover button to put in the
+    window beside it, or None when it goes over the whole card instead."""
+    sb = sidebar_width(window_width, row)
+    if not sb:
+        return "", None
+    sidebar = f'<div class="sidebar" style="width:{px(sb)}"></div>'
+    return sidebar, action_button(SIDEBAR_INSET + sb)
+
+
+# Centered right of `left`.
+def action_button(left):
+    return f'<span class="action" style="left:{px(left)}" aria-hidden="true"><span>Install</span></span>'
+
+
+
 # Draws the frame for the gallery card, buttons included, so a card is one
 # image. The app's Gallery tab reads it from index.json too.
 def build_frame_preview(theme_id, name, buttons):
@@ -137,6 +176,11 @@ def gallery(entries):
             for k in ("close", "minimize", "zoom")
         )
         framed = e.get("frame")
+        window_width = framed["window"][2] if framed else PLAIN_WINDOW[0]
+        sidebar, action = window_parts(window_width, e["buttonRow"])
+        # Windows without a sidebar are too small to hold it, so it goes over the card.
+        card_action = "" if action else action_button(0)
+        action = action or ""
         if framed:
             fw, fh = framed["size"]
             wx, wy, ww, wh = framed["window"]
@@ -148,10 +192,10 @@ def gallery(entries):
                          f'line-height:{px(th)};color:{framed["title"]["color"]}{emboss}">{html.escape(e["name"])}</span>')
             # The frame image holds the buttons too.
             stage = (f'<div class="stage" style="--fw:{px(fw)};--fh:{px(fh)};--x:{px(wx)};--y:{px(wy)};--w:{px(ww)};--h:{px(wh)}">'
-                     f'<div class="window"><div class="sidebar"></div></div><img class="frame" src="{html.escape(framed["image"])}" alt="" '
-                     f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy"><div class="corners"><div class="sidebar"></div></div>{title}</div>')
+                     f'<div class="window">{sidebar}{action}</div><img class="frame" src="{html.escape(framed["image"])}" alt="" '
+                     f'width="{px(fw, "")}" height="{px(fh, "")}" loading="lazy"><div class="corners">{sidebar}</div>{title}</div>')
         else:
-            stage = f'<div class="stage"><div class="window plain"><div class="sidebar"></div><div class="buttons">{buttons}</div></div></div>'
+            stage = f'<div class="stage"><div class="window plain">{sidebar}<div class="buttons">{buttons}</div>{action}</div></div>'
         engine = f'<p class="engine">{html.escape(e["engine"])}</p>' if e.get("engine") else ""
         source = e.get("source") or ""
         source_link = (
@@ -161,7 +205,7 @@ def gallery(entries):
         search = html.escape(f'{e["name"]} {e["author"]}'.lower())
         cards.append(f'<li data-search="{search}" data-engine="{html.escape(e.get("engine") or "")}">'
                      f'<a class="card" href="trois://install/{html.escape(e["id"])}" title="Install and apply in Trois">'
-                     f'<div class="desk">{stage}<span class="action" aria-hidden="true"><span>Install</span></span></div>'
+                     f'<div class="desk">{stage}{card_action}</div>'
                      f'<h2>{html.escape(e["name"])}</h2><p>by {html.escape(e["author"])}</p>{engine}</a>{source_link}</li>')
     return f"""<!doctype html>
 <html lang="en">
@@ -196,11 +240,9 @@ def gallery(entries):
   /* The app's 168x112 preview space, centered. Frames bigger than it are clipped. */
   .stage {{ position: relative; width: var(--fw, 168px); height: var(--fh, 112px); flex: none; }}
   .window {{ position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); background: var(--window); border-radius: 8px; box-sizing: border-box; }}
-  /* A sidebar down the window's left, so the buttons sit where most Mac apps put them. 40% of the window
-     within 60 to 72px, inset 4px, left out of windows under 110px. Kept in step with WindowSurface in the app. */
-  .window, .corners {{ container-type: inline-size; }}
-  .sidebar {{ position: absolute; left: 4px; top: 4px; bottom: 4px; width: clamp(60px, 40%, 72px); border-radius: 4px; background: var(--sidebar); }}
-  @container (max-width: 109.9px) {{ .sidebar {{ display: none; }} }}
+  /* A sidebar down the window's left, so the buttons sit where most Mac apps put them. build.py sets its
+     width to fit them. Kept in step with WindowSurface in the app. */
+  .sidebar {{ position: absolute; left: 4px; top: 4px; bottom: 4px; border-radius: 4px; background: var(--sidebar); }}
   .window.plain {{ inset: 12px; border: 0.5px solid var(--line); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }}
   .frame {{ position: absolute; left: 0; top: 0; image-rendering: pixelated; }}
   /* The window's corners over the frame. On screen the window hides the corner fill that reaches under its
@@ -213,8 +255,8 @@ def gallery(entries):
   /* Buttons draw at one CSS pixel per image pixel, like on screen. */
   .buttons img {{ image-rendering: pixelated; flex: none; }}
   .dot {{ width: 14px; height: 14px; border-radius: 50%; background: var(--faint); opacity: .4; flex: none; }}
-  /* The card's action in the middle on hover, like the app. The whole card is the link. */
-  .action {{ position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0, 0, 0, .15); opacity: 0; transition: opacity .15s; pointer-events: none; }}
+  /* The card's action on hover, centered right of the sidebar or over the whole card when there's none, like the app. The whole card is the link. */
+  .action {{ position: absolute; top: 0; right: 0; bottom: 0; display: grid; place-items: center; opacity: 0; transition: opacity .15s; pointer-events: none; }}
   .action span {{ background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 999px; box-shadow: 0 1px 2px rgba(0, 0, 0, .2); }}
   /* 3px of accent: the 1px border and 2px around it. */
   .card:hover .desk, .card:focus-visible .desk {{ border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }}
@@ -331,6 +373,7 @@ def main():
             "sha256": hashlib.sha256(data).hexdigest(),
             "download": download,
             "preview": build_previews(theme_id, meta["buttons"]),
+            "buttonRow": button_row(theme_id, meta["buttons"]),
             "engine": meta.get("engine"),
             "source": meta.get("source"),
         })

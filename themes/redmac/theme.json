@@ -1,0 +1,21 @@
+{
+  "name": "redmac",
+  "author": "BigRedPimp",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "closeupred.bmp",
+    "closeDown": "closedwnred.bmp",
+    "closeDisabled": "closedisred.bmp",
+    "minimize": "minupred.bmp",
+    "minimizeDown": "mindwnred.bmp",
+    "minimizeDisabled": "mindisred.bmp",
+    "zoom": "maxupred.bmp",
+    "zoomDown": "maxdwnred.bmp",
+    "zoomDisabled": "maxdisred.bmp",
+    "restore": "resupred.bmp",
+    "restoreDown": "resdwnred.bmp",
+    "help": "helpupred.bmp",
+    "helpDown": "helpdwnred.bmp"
+  }
+}

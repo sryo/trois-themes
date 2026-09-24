@@ -1,0 +1,19 @@
+{
+  "name": "wincontrol",
+  "author": "Rob Timmers",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "closeup.bmp",
+    "closeDown": "closedwn.bmp",
+    "closeDisabled": "closedis.bmp",
+    "minimize": "minup.bmp",
+    "minimizeDown": "mindwn.bmp",
+    "minimizeDisabled": "mindis.bmp",
+    "zoom": "maxup.bmp",
+    "zoomDown": "maxdwn.bmp",
+    "zoomDisabled": "maxdis.bmp",
+    "help": "helpup.bmp",
+    "helpDown": "helpdwn.bmp"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "winxp",
+  "author": "EHF",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "Close-Up.bmp",
+    "closeDown": "Close-Down.bmp",
+    "closeDisabled": "Close-Dis.bmp",
+    "minimize": "Min-Up.bmp",
+    "minimizeDown": "Min-Down.bmp",
+    "minimizeDisabled": "Min-Dis.bmp",
+    "zoom": "Max-Up.bmp",
+    "zoomDown": "Max-Down.bmp",
+    "zoomDisabled": "Max-Dis.bmp",
+    "restore": "Res-Up.bmp",
+    "restoreDown": "Res-Down.bmp",
+    "help": "Help-Up.bmp",
+    "helpDown": "Help-Down.bmp"
+  }
+}

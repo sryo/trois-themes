@@ -1,0 +1,21 @@
+{
+  "name": "platinum",
+  "author": "maxonico",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close_u.bmp",
+    "closeDown": "close_d.bmp",
+    "closeDisabled": "close_x.bmp",
+    "minimize": "min_u.bmp",
+    "minimizeDown": "min_d.bmp",
+    "minimizeDisabled": "min_x.bmp",
+    "zoom": "max_u.bmp",
+    "zoomDown": "max_d.bmp",
+    "zoomDisabled": "max_x.bmp",
+    "restore": "res_u.bmp",
+    "restoreDown": "res_d.bmp",
+    "help": "help_u.bmp",
+    "helpDown": "help_d.bmp"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "beaker",
+  "author": "beaker",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close.bmp",
+    "closeDown": "close_d.bmp",
+    "minimize": "min.bmp",
+    "minimizeDown": "min_d.bmp",
+    "zoom": "max.bmp",
+    "zoomDown": "max_d.bmp",
+    "restore": "res.bmp",
+    "restoreDown": "res_d.bmp",
+    "help": "hlp.bmp",
+    "helpDown": "hlp_d.bmp"
+  }
+}

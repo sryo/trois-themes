@@ -1,0 +1,18 @@
+{
+  "name": "hifiki",
+  "author": "kepplah",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close_up copy.bmp",
+    "closeDown": "close_dwn copy.bmp",
+    "minimize": "mini_up copy.bmp",
+    "minimizeDown": "mini_dwn copy.bmp",
+    "zoom": "max_up copy.bmp",
+    "zoomDown": "max_dwn copy.bmp",
+    "restore": "rst_up copy.bmp",
+    "restoreDown": "rst_dwn copy.bmp",
+    "help": "help_up.bmp",
+    "helpDown": "help_dwn.bmp"
+  }
+}

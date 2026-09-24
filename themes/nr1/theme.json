@@ -1,0 +1,21 @@
+{
+  "name": "nr1",
+  "author": "Scott A. Munro",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "1closeup.bmp",
+    "closeDown": "1closedn.bmp",
+    "closeDisabled": "1closedis.bmp",
+    "minimize": "1minup.bmp",
+    "minimizeDown": "1mindn.bmp",
+    "minimizeDisabled": "1mindis.bmp",
+    "zoom": "1maxup.bmp",
+    "zoomDown": "1maxdn.bmp",
+    "zoomDisabled": "1maxdis.bmp",
+    "restore": "1resup.bmp",
+    "restoreDown": "1resdn.bmp",
+    "help": "1helpup.bmp",
+    "helpDown": "1helpdn.bmp"
+  }
+}

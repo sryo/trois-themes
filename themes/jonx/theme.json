@@ -1,0 +1,16 @@
+{
+  "name": "jonx",
+  "author": "jonx",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "jonx_close_1u.bmp",
+    "closeDown": "jonx_close_2d.bmp",
+    "minimize": "jonx_minim_1u.bmp",
+    "minimizeDown": "jonx_minim_2d.bmp",
+    "restore": "jonx_restore_1u.bmp",
+    "restoreDown": "jonx_restore_2d.bmp",
+    "help": "jonx_help_1u.bmp",
+    "helpDown": "jonx_help_2d.bmp"
+  }
+}

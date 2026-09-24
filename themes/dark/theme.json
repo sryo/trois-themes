@@ -1,0 +1,19 @@
+{
+  "name": "dark",
+  "author": "schminimalischt",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close_01.bmp",
+    "closeDown": "close_01down.bmp",
+    "closeDisabled": "close_01disable.bmp",
+    "minimize": "min_01.bmp",
+    "minimizeDown": "min_01down.bmp",
+    "minimizeDisabled": "min_01disable.bmp",
+    "zoom": "max_01.bmp",
+    "zoomDown": "max_01down.bmp",
+    "zoomDisabled": "max_01disable.bmp",
+    "restore": "res_01.bmp",
+    "restoreDown": "res_01down.bmp"
+  }
+}

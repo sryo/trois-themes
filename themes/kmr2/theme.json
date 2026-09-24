@@ -1,0 +1,21 @@
+{
+  "name": "kmr2",
+  "author": "kmr",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "Mac/close_u.bmp",
+    "closeDown": "Mac/close_d.bmp",
+    "closeDisabled": "Mac/close_x.bmp",
+    "minimize": "Mac/min_u.bmp",
+    "minimizeDown": "Mac/min_d.bmp",
+    "minimizeDisabled": "Mac/min_x.bmp",
+    "zoom": "Mac/max_u.bmp",
+    "zoomDown": "Mac/max_d.bmp",
+    "zoomDisabled": "Mac/max_x.bmp",
+    "restore": "Mac/restore_u.bmp",
+    "restoreDown": "Mac/restore_d.bmp",
+    "help": "Mac/help_u.bmp",
+    "helpDown": "Mac/help_d.bmp"
+  }
+}

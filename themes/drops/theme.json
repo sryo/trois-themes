@@ -1,0 +1,13 @@
+{
+  "name": "drops",
+  "author": "buvysoft",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close.bmp",
+    "minimize": "min.bmp",
+    "zoom": "max-res.bmp",
+    "restore": "max-res.bmp",
+    "help": "help.bmp"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "plastic",
+  "author": "plastic",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close_up.bmp",
+    "closeDown": "close_down.bmp",
+    "closeDisabled": "close_dis.bmp",
+    "minimize": "min_up.bmp",
+    "minimizeDown": "min_down.bmp",
+    "minimizeDisabled": "min_dis.bmp",
+    "zoom": "max_up.bmp",
+    "zoomDown": "max_down.bmp",
+    "zoomDisabled": "max_dis.bmp",
+    "restore": "rest_up.bmp",
+    "restoreDown": "rest_down.bmp",
+    "help": "help_up.bmp",
+    "helpDown": "help_down.bmp"
+  }
+}

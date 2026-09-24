@@ -1,0 +1,18 @@
+{
+  "name": "nikkie4",
+  "author": "Nikkie",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close button up.bmp",
+    "closeDown": "close button down.bmp",
+    "minimize": "minimize button up.bmp",
+    "minimizeDown": "minimize button down.bmp",
+    "zoom": "maximize button up.bmp",
+    "zoomDown": "maximize button down.bmp",
+    "restore": "restore button up.bmp",
+    "restoreDown": "restore button down.bmp",
+    "help": "help button up.bmp",
+    "helpDown": "help button  down.bmp"
+  }
+}

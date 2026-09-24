@@ -1,0 +1,21 @@
+{
+  "name": "tinker",
+  "author": "tinker",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "CloseUp.bmp",
+    "closeDown": "CloseDown.bmp",
+    "closeDisabled": "CloseDis.bmp",
+    "minimize": "MinUp.bmp",
+    "minimizeDown": "MinDown.bmp",
+    "minimizeDisabled": "MinDis.bmp",
+    "zoom": "MaxUp.bmp",
+    "zoomDown": "MaxDown.bmp",
+    "zoomDisabled": "MaxDis.bmp",
+    "restore": "ResUp.bmp",
+    "restoreDown": "ResDown.bmp",
+    "help": "HelpUp.bmp",
+    "helpDown": "HelpDown.bmp"
+  }
+}

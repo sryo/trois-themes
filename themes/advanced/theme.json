@@ -1,0 +1,19 @@
+{
+  "name": "advanced",
+  "author": "schminimalischt",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close_up.bmp",
+    "closeDown": "close_down.bmp",
+    "closeDisabled": "close_dis.bmp",
+    "minimize": "minimize_up.bmp",
+    "minimizeDown": "minimize_down.bmp",
+    "minimizeDisabled": "minimize_dis.bmp",
+    "zoom": "maximize_up.bmp",
+    "zoomDown": "maximize_down.bmp",
+    "zoomDisabled": "maximize_dis.bmp",
+    "restore": "restore_up.bmp",
+    "restoreDown": "restore_down.bmp"
+  }
+}

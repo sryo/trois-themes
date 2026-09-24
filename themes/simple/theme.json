@@ -1,0 +1,21 @@
+{
+  "name": "simple",
+  "author": "Andrew Foltz",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close window button.bmp",
+    "closeDown": "close window button down.bmp",
+    "closeDisabled": "close gray.bmp",
+    "minimize": "min up.bmp",
+    "minimizeDown": "min dwn.bmp",
+    "minimizeDisabled": "min gray.bmp",
+    "zoom": "max up.bmp",
+    "zoomDown": "max dwn.bmp",
+    "zoomDisabled": "max gray.bmp",
+    "restore": "restore up.bmp",
+    "restoreDown": "restore down.bmp",
+    "help": "help up.bmp",
+    "helpDown": "help dwn.bmp"
+  }
+}

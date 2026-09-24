@@ -1,0 +1,21 @@
+{
+  "name": "java",
+  "author": "Rafael Laguna",
+  "version": 1,
+  "source": "https://www.virtualplastic.net/html/eppie.html",
+  "buttons": {
+    "close": "close-up.bmp",
+    "closeDown": "close-down.bmp",
+    "closeDisabled": "close-dis.bmp",
+    "minimize": "min-up.bmp",
+    "minimizeDown": "min-down.bmp",
+    "minimizeDisabled": "min-dis.bmp",
+    "zoom": "max-up.bmp",
+    "zoomDown": "max-down.bmp",
+    "zoomDisabled": "max-dis.bmp",
+    "restore": "res-up.bmp",
+    "restoreDown": "res-down.bmp",
+    "help": "help-up.bmp",
+    "helpDown": "help-down.bmp"
+  }
+}

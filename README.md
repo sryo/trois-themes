@@ -44,7 +44,7 @@ The easy way: [open a submission](https://github.com/trois-dev/trois-themes/issu
 
    Button keys: `close`, `closeHover`, `closeDown`, `closeDisabled`, `minimize`, `minimizeHover`, `minimizeDown`, `minimizeDisabled`, `zoom`, `zoomHover`, `zoomDown`, `zoomDisabled`, `restore`, `restoreDown`, `help`, `helpHover`, `helpDown`, `helpDisabled`. At least one of `close`, `minimize` or `zoom` is required.
 
-   `engine` and `source` are optional. `engine` is the tool the theme was made for, such as `EppieDesktop`, `Kaleidoscope 1.x` or `Kaleidoscope 2.x`; leave it out for themes made for Trois. `source` is a URL for the original download or gallery.
+   `description`, `engine` and `source` are optional. `description` is a short blurb shown when you hover the theme; use `\n` for line breaks. Kaleidoscope schemes carry the one their author wrote for the control panel. `engine` is the tool the theme was made for, such as `EppieDesktop`, `Kaleidoscope 1.x` or `Kaleidoscope 2.x`; leave it out for themes made for Trois. `source` is a URL for the original download or gallery.
 
 4. Run the check described in [CONTRIBUTING](CONTRIBUTING.md#adding-a-theme-with-a-pull-request) and open a pull request.
 

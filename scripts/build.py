@@ -47,7 +47,7 @@ def check_theme(theme_id):
     for key, kind in [("name", str), ("author", str), ("version", int), ("buttons", dict)]:
         if not isinstance(meta.get(key), kind):
             raise ThemeError(f"theme.json needs {key} ({kind.__name__})")
-    for key in ("engine", "source"):
+    for key in ("description", "engine", "source"):
         if key in meta and not isinstance(meta[key], str):
             raise ThemeError(f"theme.json {key} must be a string")
 
@@ -219,8 +219,10 @@ def gallery(entries):
             if source.startswith(("https://", "http://")) else ""
         )
         search = html.escape(f'{e["name"]} {e["author"]}'.lower())
+        # The theme's own blurb, if it has one, above what clicking does.
+        hint = "\n\n".join(x for x in (e.get("description"), "Install and apply in Trois") if x)
         cards.append(f'<li data-search="{search}" data-engine="{html.escape(e.get("engine") or "")}">'
-                     f'<a class="card" href="trois://install/{html.escape(e["id"])}" title="Install and apply in Trois">'
+                     f'<a class="card" href="trois://install/{html.escape(e["id"])}" title="{html.escape(hint)}">'
                      f'<div class="desk">{stage}{ACTION}</div>'
                      f'<h2>{html.escape(e["name"])}</h2><p>by {html.escape(e["author"])}</p></a>{source_link}</li>')
     return f"""<!doctype html>
@@ -445,6 +447,7 @@ def main():
             "download": download,
             "preview": build_previews(theme_id, meta["buttons"]),
             "buttonRow": button_row(theme_id, meta["buttons"]),
+            "description": meta.get("description"),
             "engine": meta.get("engine"),
             "source": meta.get("source"),
         })

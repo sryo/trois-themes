@@ -1,0 +1,16 @@
+{
+  "name": "Lace and Sapphires 3.2",
+  "author": "Janet Parris",
+  "description": "The look of sapphires and lace for your desktop.",
+  "version": 1,
+  "engine": "Kaleidoscope 1.x",
+  "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/laceandsapphires.sit",
+  "buttons": {
+    "closeDown": "close_down.png",
+    "close": "close_up.png",
+    "zoomDown": "max_down.png",
+    "zoom": "max_up.png",
+    "minimizeDown": "min_down.png",
+    "minimize": "min_up.png"
+  }
+}

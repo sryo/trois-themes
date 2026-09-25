@@ -1,0 +1,16 @@
+{
+  "name": "Byzantine 3.5",
+  "author": "Janet Parris",
+  "description": "A scheme with accent colors using gemstones and goldwork; my first scheme.",
+  "version": 1,
+  "engine": "Kaleidoscope 1.x",
+  "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/byzantine.sit",
+  "buttons": {
+    "closeDown": "close_down.png",
+    "close": "close_up.png",
+    "zoomDown": "max_down.png",
+    "zoom": "max_up.png",
+    "minimizeDown": "min_down.png",
+    "minimize": "min_up.png"
+  }
+}

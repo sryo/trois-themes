@@ -1,6 +1,7 @@
 {
   "name": "Lavender",
   "author": "Mike Balonek",
+  "description": "This Scheme is based on a lavender theme.",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/lavendermike.sit",

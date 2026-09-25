@@ -1,6 +1,7 @@
 {
   "name": "Little Bar",
   "author": "Gwendolyn",
+  "description": "by Gwendolyn",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/littlebar.sit",

@@ -1,6 +1,7 @@
 {
   "name": "Golden Bed",
   "author": "Paul Gager-Houston",
+  "description": "This is my first K2 Scheme. The window looks like a bed head, so I name it Golden Bed. Enjoy it.",
   "version": 1,
   "engine": "Kaleidoscope 2.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/goldenbed.sit",

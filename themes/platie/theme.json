@@ -1,6 +1,7 @@
 {
   "name": "Platie",
   "author": "Robin Rundkvist",
+  "description": "You can stop looking now. You have found it.",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/platie.sit",

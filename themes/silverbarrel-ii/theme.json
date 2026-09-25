@@ -1,6 +1,7 @@
 {
   "name": "Silver Barrel II",
   "author": "Woo Kong Teik",
+  "description": "A total conversion from K-1 scheme \"SilverBarrel\"",
   "version": 1,
   "engine": "Kaleidoscope 2.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/silverbarrelii.sit",

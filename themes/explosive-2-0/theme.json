@@ -1,6 +1,7 @@
 {
   "name": "Explosive",
   "author": "Jeremy Burge",
+  "description": "Explosive is a scheme that the main idea of it was to make a scheme that anything thing you click on will explode.",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/explosive.sit",

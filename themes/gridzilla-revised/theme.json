@@ -1,6 +1,7 @@
 {
   "name": "Gridzilla Revised",
   "author": "Jarvis Badgley",
+  "description": "This is the newly inhanced version of GridOut. It's basically designed to look like you are functioning in a would of a 3D grid.",
   "version": 1,
   "engine": "Kaleidoscope 2.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/gridzillarevised.sit",

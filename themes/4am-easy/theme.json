@@ -1,6 +1,7 @@
 {
   "name": "4am easy",
   "author": "Jeni Pleskow",
+  "description": "That Hideous hour when the birds just won't shut up..",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/4am.sit",

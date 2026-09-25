@@ -1,6 +1,7 @@
 {
   "name": "Topsy Turvy",
   "author": "Todd Johnson",
+  "description": "For a truly transcendent experience, turn your monitor upside down...\nhttp://niebuck.home.ml.org",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/topsyturvy.sit",

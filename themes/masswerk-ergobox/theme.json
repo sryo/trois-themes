@@ -1,6 +1,7 @@
 {
   "name": "Masswerk ErgoBox",
   "author": "Norbert Landsteiner",
+  "description": "Ergonomy for Mac in box.",
   "version": 1,
   "engine": "Kaleidoscope 2.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/masswerkergobox.sit",

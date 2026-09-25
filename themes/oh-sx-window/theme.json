@@ -1,6 +1,7 @@
 {
   "name": "Oh! SX-Window",
   "author": "qwer",
+  "description": "SHARP X68000",
   "version": 1,
   "engine": "Kaleidoscope 2.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/oh%21sx-window.sit",

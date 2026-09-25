@@ -1,6 +1,7 @@
 {
   "name": "Fire Signs",
   "author": "Janet Parris",
+  "description": "A fire-breathing dragon for Leo, Sagitarrius, and Aries.",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/firesigns.sit",

@@ -1,6 +1,7 @@
 {
   "name": "Librarian",
   "author": "Nitehawk Jarrett",
+  "description": "A book themed scheme for all you bookworms out there.",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/librarian.sit",

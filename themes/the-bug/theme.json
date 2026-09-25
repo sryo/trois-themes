@@ -1,6 +1,7 @@
 {
   "name": "The Bug",
   "author": "Maury McCown",
+  "description": "Strange, yet quite easy to use. Simple, but with a few cool twists.",
   "version": 1,
   "engine": "Kaleidoscope 2.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/thebug.sit",

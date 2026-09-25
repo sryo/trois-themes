@@ -1,0 +1,16 @@
+{
+  "name": "Elegance Argent",
+  "author": "Janet Parris",
+  "description": "A dark scheme with a silvery touch.",
+  "version": 1,
+  "engine": "Kaleidoscope 1.x",
+  "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/eleganceargent.sit",
+  "buttons": {
+    "closeDown": "close_down.png",
+    "close": "close_up.png",
+    "zoomDown": "max_down.png",
+    "zoom": "max_up.png",
+    "minimizeDown": "min_down.png",
+    "minimize": "min_up.png"
+  }
+}

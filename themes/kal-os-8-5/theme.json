@@ -1,6 +1,7 @@
 {
   "name": "Kal OS 8",
   "author": "Nitehawk Jarrett",
+  "description": "The Mac OS made my way.",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/kalos8.sit",

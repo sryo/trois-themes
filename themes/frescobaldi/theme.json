@@ -1,6 +1,7 @@
 {
   "name": "Frescobaldi",
   "author": "Janet Parris",
+  "description": "A scheme in the baroque composers series.",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/frescobaldi.sit",

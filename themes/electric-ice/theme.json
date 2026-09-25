@@ -1,6 +1,7 @@
 {
   "name": "Electric Ice",
   "author": "Peter Renfroe",
+  "description": "A Very Cool Scheme!",
   "version": 1,
   "engine": "Kaleidoscope 1.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/electricice.sit",

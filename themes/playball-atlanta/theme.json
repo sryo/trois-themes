@@ -1,6 +1,7 @@
 {
   "name": "Atlanta",
   "author": "Rik Osborne",
+  "description": "\"That's a lot of money for a Coke.\"",
   "version": 1,
   "engine": "Kaleidoscope 2.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/atlanta.sit",

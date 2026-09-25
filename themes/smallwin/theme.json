@@ -1,6 +1,7 @@
 {
   "name": "SmallWin",
   "author": "Erik Ekengren",
+  "description": "This scheme lets you reclaim a few pixels of your screen.",
   "version": 1,
   "engine": "Kaleidoscope 2.x",
   "source": "https://web.archive.org/web/2002/http://www.kaleidoscope.net/schemes/schemes/smallwin.sit",

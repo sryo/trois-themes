@@ -1,6 +1,7 @@
 # Draws a theme's window frame around a small window, like the theme grid in Trois.
 #
-# A port of FramePreview.swift, WindowFrame.swift and WindowFrameK1.swift, with
+# A port of FramePreview.swift, WindowFrame.swift, WindowFrameK1.swift and
+# WindowFrameWB.swift, with
 # the settings the grid starts with: an active window whose buttons sit at the
 # traffic lights, not in the frame. The title isn't drawn; the page sets it as
 # text in the returned title box. Coordinates are points with a top-left
@@ -514,6 +515,101 @@ class K1Frame:
         canvas.draw(s, (mid + 1, 0, s.width, h), (x1 - right_w, y0, x1, y0 + h), clip=rect)
 
 
+class WBFrame:
+    """A WindowBlinds skin: four edge images, each a fixed start, a tiled or
+    stretched middle and a fixed end, plus freely placed buttons. See
+    WindowFrameWB.swift for the rules."""
+
+    SIDES = ("top", "left", "right", "bottom")
+
+    def __init__(self, edges, meta, frame_dir, title=None):
+        self.edges = edges
+        self.spec = meta.get("edges") or {}
+        self.text = meta.get("text") if isinstance(meta.get("text"), dict) else {}
+        self.title_style = title
+        self.buttons = []
+        for b in meta.get("buttons") or []:
+            image = load_image(os.path.join(frame_dir, str(b.get("image", ""))))
+            states = b.get("states")
+            if image is None or not isinstance(states, int) or states <= 0 or image.width < states:
+                continue
+            self.buttons.append((image, b))
+        top, left, right, bottom = (edges[s] for s in self.SIDES)
+        self.insets = (top.height, left.width, bottom.height, right.width)
+
+    def draw_edge(self, canvas, image, spec, box, horizontal):
+        x0, y0, x1, y1 = box
+        length = (x1 - x0) if horizontal else (y1 - y0)
+        extent = image.width if horizontal else image.height
+        thick = image.height if horizontal else image.width
+        if length <= 0 or extent <= 0:
+            return
+        start = min(int(spec.get("start", 0)), extent)
+        end = min(int(spec.get("end", 0)), extent - start)
+
+        def source(a, n):
+            return (a, 0, a + n, thick) if horizontal else (0, a, thick, a + n)
+
+        def dest(a, n):
+            return (x0 + a, y0, x0 + a + n, y0 + thick) if horizontal else (x0, y0 + a, x0 + thick, y0 + a + n)
+
+        middle, span = extent - start - end, length - start - end
+        if middle > 0 and span > 0:
+            if spec.get("tile", True):
+                clip = dest(start, span)
+                clip = (max(clip[0], x0), max(clip[1], y0), min(clip[2], x1), min(clip[3], y1))
+                at = 0
+                while at < span:
+                    canvas.draw(image, source(start, middle), dest(start + at, middle), clip=clip)
+                    at += middle
+            else:
+                canvas.draw(image, source(start, middle), dest(start, span), clip=box)
+        if start:
+            canvas.draw(image, source(0, start), dest(0, start), clip=box)
+        if end:
+            canvas.draw(image, source(extent - end, end), dest(length - end, end), clip=box)
+
+    def render(self, window, title):
+        t, l, b, r = self.insets
+        W, H = window[0] + l + r, window[1] + t + b
+        canvas = Canvas((W, H))
+        boxes = {"left": (0, 0, l, H), "right": (W - r, 0, W, H),
+                 "top": (l, 0, W - r, t), "bottom": (l, H - b, W - r, H)}
+        for side in ("left", "right", "top", "bottom"):
+            self.draw_edge(canvas, self.edges[side], self.spec.get(side) or {}, boxes[side], side in ("top", "bottom"))
+
+        hole = (l, t, l + window[0], t + window[1])
+        canvas.clear(hole)
+        edge = stored_color(self.edges["left"], l - 1, self.edges["left"].height // 2)
+        if edge:
+            canvas.fill_corners(hole, edge)
+
+        # Every widget sits at the traffic lights; only image buttons draw here.
+        facts = {"active": True, "maximized": False, "title": bool(title),
+                 "zoom": True, "minimize": True, "either": True}
+        for image, spec in self.buttons:
+            when = spec.get("when") or {}
+            if spec.get("widget") or any(facts.get(k) != v for k, v in when.items()):
+                continue
+            w = image.width // spec["states"]
+            x, y = spec.get("x", 0), spec.get("y", 0)
+            align = spec.get("align", 0)
+            x = W - x if align in (1, 3) else x
+            y = H - y if align in (2, 3) else y
+            piece = image.crop((0, 0, w, image.height))
+            alpha = spec.get("alpha")
+            if isinstance(alpha, int) and 0 <= alpha < 255:
+                piece.putalpha(piece.getchannel("A").point(lambda a: a * alpha // 255))
+            canvas.draw(piece, (0, 0, w, image.height), (x, y, x + w, y + image.height))
+
+        band = (H - b, b) if self.text.get("onBottom") else (0, t)
+        x0 = l + self.text.get("shift", 0)
+        x1 = W - max(self.text.get("rightClip", 0), r)
+        box = (x0, band[0] + self.text.get("shiftVert", 0), max(0, x1 - x0), band[1])
+        title_box = styled_title(box, self.title_style, "#000000")
+        return canvas.image, (W, H), title_box
+
+
 def load(frame_dir):
     """The frame in a theme's frame folder, or None if it can't be read."""
     try:
@@ -523,10 +619,15 @@ def load(frame_dir):
         return None
     if not isinstance(meta, dict):
         return None
+    title = meta.get("title") if isinstance(meta.get("title"), dict) else None
+    if meta.get("format") == "wb":
+        edges = {s: load_image(os.path.join(frame_dir, s + ".png")) for s in WBFrame.SIDES}
+        if any(e is None for e in edges.values()):
+            return None
+        return WBFrame(edges, meta, frame_dir, title)
     active = load_image(os.path.join(frame_dir, "active.png"))
     if active is None:
         return None
-    title = meta.get("title") if isinstance(meta.get("title"), dict) else None
     if meta.get("format") == "k1":
         if active.size != (16, 16):
             return None
